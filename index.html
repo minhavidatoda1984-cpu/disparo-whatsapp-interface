@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Disparo WhatsApp - Evolution API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .config-section {
+            margin-bottom: 30px;
+        }
+
+        .config-section h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .config-icon {
+            width: 24px;
+            height: 24px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #25D366;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        input[type="file"] {
+            cursor: pointer;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .preview-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .preview-section h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .preview-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .preview-item {
+            padding: 8px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+
+        .preview-checkbox {
+            flex-shrink: 0;
+        }
+
+        .preview-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .preview-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .preview-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .preview-phone {
+            color: #666;
+        }
+
+        .select-all-container {
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .select-all-container label {
+            cursor: pointer;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .send-log {
+            margin-top: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .send-log h4 {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .log-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .log-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .log-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .log-pending {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-schedule {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-schedule:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .scheduling-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .scheduling-section h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .scheduling-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        input[type="date"],
+        input[type="time"] {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="date"]:focus,
+        input[type="time"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .scheduled-list {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #ffc107;
+        }
+
+        .scheduled-list h4 {
+            color: #856404;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .scheduled-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ffc107;
+        }
+
+        .scheduled-item-info {
+            flex: 1;
+        }
+
+        .scheduled-item-time {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .scheduled-item-details {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .btn-cancel-schedule {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel-schedule:hover {
+            background: #c82333;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #0c5460;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #25D366 0%, #128C7E 100%);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Sistema de Disparo WhatsApp</h1>
+            <p>Evolution API + N8N</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                ℹ️ <strong>Instruções:</strong> Configure sua API Evolution, carregue o arquivo Excel com os contatos e
+                digite a mensagem para envio em massa.
+            </div>
+
+            <div class="config-section">
+                <h2>
+                    <span class="config-icon">⚙️</span>
+                    Configurações da API
+                </h2>
+
+                <div class="form-group">
+                    <label for="n8nWebhook">URL do Webhook N8N:</label>
+                    <input type="text" id="n8nWebhook" placeholder="https://seu-n8n.com/webhook/disparo-whatsapp"
+                        value="https://n8n.naturaisterravida.com.br/webhook/conexao-limpa-v1">
+                </div>
+
+                <div class="form-group">
+                    <label for="apiKey">API Key Evolution (opcional):</label>
+                    <input type="text" id="apiKey" placeholder="Sua chave de API"
+                        value="f98fed17beccac0149db6cfe6bfb7fff">
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h2>
+                    <span class="config-icon">📋</span>
+                    Lista de Contatos
+                </h2>
+
+                <div class="form-group">
+                    <label for="excelFile">Arquivo Excel (.xlsx):</label>
+                    <input type="file" id="excelFile" accept=".xlsx,.xls" />
+                </div>
+
+                <div class="preview-section" id="previewSection" style="display: none;">
+                    <h3>📊 Preview dos Contatos</h3>
+                    <div class="select-all-container">
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" checked>
+                        <label for="selectAll">Selecionar Todos</label>
+                    </div>
+                    <div class="preview-list" id="previewList"></div>
+                    <p style="margin-top: 10px; font-size: 13px; color: #666;">
+                        Total: <strong id="totalContacts">0</strong> contatos |
+                        Selecionados: <strong id="selectedCount">0</strong>
+                    </p>
+                </div>
+
+                <div class="send-log" id="sendLog">
+                    <h4>📋 Log de Envio:</h4>
+                    <div id="logItems"></div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h2>
+                    <span class="config-icon">💬</span>
+                    Mensagem
+                </h2>
+
+                <div class="form-group">
+                    <label for="message">Digite sua mensagem:</label>
+                    <textarea id="message"
+                        placeholder="Olá {nome}, tudo bem? Esta é uma mensagem personalizada..."></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span> caracteres
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    💡 <strong>Dica:</strong> Use <code>{nome}</code> para personalizar a mensagem com o nome do
+                    contato.
+                </div>
+
+                <div class="scheduling-section">
+                    <h3>⏰ Agendamento (Opcional)</h3>
+                    <div class="scheduling-inputs">
+                        <div class="form-group">
+                            <label for="scheduleDate">Data:</label>
+                            <input type="date" id="scheduleDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleTime">Hora:</label>
+                            <input type="time" id="scheduleTime">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="scheduledList" class="scheduled-list" style="display: none;">
+                    <h4>📋 Disparos Agendados:</h4>
+                    <div id="scheduledItems"></div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-clear" onclick="limparFormulario()">
+                    🗑️ Limpar
+                </button>
+                <button class="btn-schedule" id="btnSchedule" onclick="agendarDisparo()">
+                    <span>⏰ Agendar Disparo</span>
+                </button>
+                <button class="btn-send" id="btnSend" onclick="iniciarDisparo()">
+                    <span>📤 Disparo Imediato</span>
+                </button>
+            </div>
+
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        let contatosData = [];
+
+        // Contador de caracteres
+        document.getElementById('message').addEventListener('input', function () {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+
+        // Processar arquivo Excel
+        document.getElementById('excelFile').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    contatosData = jsonData.map(row => ({
+                        nome: row['Nome '] || row['Nome'] || row['nome'] || '',
+                        telefone: String(row['telefone'] || row['Telefone'] || row['TELEFONE'] || '').trim()
+                    })).filter(c => c.telefone);
+
+                    mostrarPreview();
+                } catch (error) {
+                    mostrarStatus('Erro ao processar arquivo Excel: ' + error.message, 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function mostrarPreview() {
+            if (contatosData.length === 0) return;
+
+            document.getElementById('previewSection').style.display = 'block';
+            document.getElementById('totalContacts').textContent = contatosData.length;
+
+            const previewList = document.getElementById('previewList');
+            previewList.innerHTML = contatosData.map((contato, index) => `
+                <div class="preview-item">
+                    <div class="preview-checkbox">
+                        <input type="checkbox" class="contact-checkbox" data-index="${index}" onchange="updateSelectedCount()" checked>
+                    </div>
+                    <div class="preview-info">
+                        <span class="preview-name">${contato.nome}</span>
+                        <span class="preview-phone">${contato.telefone}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            updateSelectedCount();
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.contact-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.contact-checkbox:checked');
+            document.getElementById('selectedCount').textContent = checkboxes.length;
+        }
+
+        async function iniciarDisparo() {
+            const webhookUrl = document.getElementById('n8nWebhook').value.trim();
+            const mensagem = document.getElementById('message').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+
+            if (!webhookUrl) {
+                mostrarStatus('Por favor, informe a URL do Webhook N8N', 'error');
+                return;
+            }
+
+            if (!mensagem) {
+                mostrarStatus('Por favor, digite uma mensagem', 'error');
+                return;
+            }
+
+            // Pega apenas os contatos selecionados
+            const selectedCheckboxes = document.querySelectorAll('.contact-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                mostrarStatus('Por favor, selecione pelo menos um contato', 'error');
+                return;
+            }
+
+            const selectedContacts = Array.from(selectedCheckboxes).map(cb => {
+                const index = parseInt(cb.dataset.index);
+                return contatosData[index];
+            });
+
+            const btnSend = document.getElementById('btnSend');
+            btnSend.disabled = true;
+            btnSend.innerHTML = '<div class="spinner"></div> <span>Enviando...</span>';
+
+            // Mostra o log de envio
+            const sendLog = document.getElementById('sendLog');
+            const logItems = document.getElementById('logItems');
+            sendLog.style.display = 'block';
+            logItems.innerHTML = '';
+
+            mostrarStatus(`Iniciando disparo para ${selectedContacts.length} contato(s)...`, 'loading');
+            document.getElementById('progressBar').style.display = 'block';
+
+            try {
+                const payload = {
+                    contatos: selectedContacts,
+                    mensagem: mensagem,
+                    apiKey: apiKey
+                };
+
+                // Adiciona logs pendentes
+                selectedContacts.forEach(c => {
+                    logItems.innerHTML += `
+                        <div class="log-item log-pending" id="log-${c.telefone.replace(/\D/g, '')}">
+                            ⏳ ${c.nome} (${c.telefone}) - Aguardando...
+                        </div>
+                    `;
+                });
+
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                mostrarStatus(
+                    `✅ Disparo iniciado! ${selectedContacts.length} mensagem(ns) em processamento.`,
+                    'success'
+                );
+
+                // Simula atualização dos logs
+                setTimeout(() => {
+                    selectedContacts.forEach(c => {
+                        const logItem = document.getElementById(`log-${c.telefone.replace(/\D/g, '')}`);
+                        if (logItem) {
+                            logItem.className = 'log-item log-success';
+                            logItem.innerHTML = `✅ ${c.nome} (${c.telefone}) - Enviado!`;
+                        }
+                    });
+                }, 3000);
+
+                // Simular progresso
+                simularProgresso();
+
+            } catch (error) {
+                mostrarStatus('Erro ao iniciar disparo: ' + error.message, 'error');
+
+                // Marca todos como erro
+                selectedContacts.forEach(c => {
+                    const logItem = document.getElementById(`log-${c.telefone.replace(/\D/g, '')}`);
+                    if (logItem) {
+                        logItem.className = 'log-item log-error';
+                        logItem.innerHTML = `❌ ${c.nome} (${c.telefone}) - Erro`;
+                    }
+                });
+
+                btnSend.disabled = false;
+                btnSend.innerHTML = '<span>📤 Disparo Imediato</span>';
+                document.getElementById('progressBar').style.display = 'none';
+            }
+        }
+
+        function simularProgresso() {
+            let progresso = 0;
+            const total = contatosData.length;
+            const progressFill = document.getElementById('progressFill');
+
+            const interval = setInterval(() => {
+                progresso += 1;
+                const percentual = Math.min((progresso / total) * 100, 100);
+                progressFill.style.width = percentual + '%';
+                progressFill.textContent = Math.round(percentual) + '%';
+
+                if (progresso >= total) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('btnSend').disabled = false;
+                        document.getElementById('btnSend').innerHTML = '<span>📤 Disparo em Massa</span>';
+                    }, 1000);
+                }
+            }, (5000 / total)); // 5 segundos para completar
+        }
+
+        function mostrarStatus(mensagem, tipo) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.className = 'status-message status-' + tipo;
+            statusEl.textContent = mensagem;
+            statusEl.style.display = 'block';
+
+            if (tipo === 'success' || tipo === 'error') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function limparFormulario() {
+            document.getElementById('message').value = '';
+            document.getElementById('excelFile').value = '';
+            document.getElementById('charCount').textContent = '0';
+            document.getElementById('previewSection').style.display = 'none';
+            document.getElementById('statusMessage').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('scheduleDate').value = '';
+            document.getElementById('scheduleTime').value = '';
+            contatosData = [];
+        }
+
+        // ===== FUNCIONALIDADES DE AGENDAMENTO =====
+        let scheduledJobs = JSON.parse(localStorage.getItem('scheduledJobs') || '[]');
+
+        function agendarDisparo() {
+            const scheduleDate = document.getElementById('scheduleDate').value;
+            const scheduleTime = document.getElementById('scheduleTime').value;
+            const mensagem = document.getElementById('message').value.trim();
+            const webhookUrl = document.getElementById('n8nWebhook').value.trim();
+
+            if (!scheduleDate || !scheduleTime) {
+                mostrarStatus('Por favor, selecione data e hora para o agendamento', 'error');
+                return;
+            }
+
+            if (!mensagem) {
+                mostrarStatus('Por favor, digite uma mensagem', 'error');
+                return;
+            }
+
+            if (contatosData.length === 0) {
+                mostrarStatus('Por favor, carregue um arquivo Excel com contatos', 'error');
+                return;
+            }
+
+            const scheduledDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
+            const now = new Date();
+
+            if (scheduledDateTime <= now) {
+                mostrarStatus('A data/hora deve ser no futuro', 'error');
+                return;
+            }
+
+            const job = {
+                id: Date.now(),
+                scheduledTime: scheduledDateTime.getTime(),
+                date: scheduleDate,
+                time: scheduleTime,
+                contatos: [...contatosData],
+                mensagem: mensagem,
+                webhookUrl: webhookUrl,
+                apiKey: document.getElementById('apiKey').value.trim()
+            };
+
+            scheduledJobs.push(job);
+            localStorage.setItem('scheduledJobs', JSON.stringify(scheduledJobs));
+
+            renderScheduledJobs();
+            mostrarStatus(`✅ Disparo agendado para ${scheduleDate} às ${scheduleTime}`, 'success');
+        }
+
+        function renderScheduledJobs() {
+            const container = document.getElementById('scheduledItems');
+            const listDiv = document.getElementById('scheduledList');
+
+            if (scheduledJobs.length === 0) {
+                listDiv.style.display = 'none';
+                return;
+            }
+
+            listDiv.style.display = 'block';
+            container.innerHTML = scheduledJobs.map(job => `
+                <div class="scheduled-item">
+                    <div class="scheduled-item-info">
+                        <div class="scheduled-item-time">📅 ${job.date} às ${job.time}</div>
+                        <div class="scheduled-item-details">${job.contatos.length} contatos</div>
+                    </div>
+                    <button class="btn-cancel-schedule" onclick="cancelScheduledJob(${job.id})">
+                        ❌ Cancelar
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function cancelScheduledJob(jobId) {
+            scheduledJobs = scheduledJobs.filter(job => job.id !== jobId);
+            localStorage.setItem('scheduledJobs', JSON.stringify(scheduledJobs));
+            renderScheduledJobs();
+            mostrarStatus('Agendamento cancelado', 'success');
+        }
+
+        async function checkScheduledJobs() {
+            const now = Date.now();
+            const jobsToExecute = scheduledJobs.filter(job => job.scheduledTime <= now);
+
+            for (const job of jobsToExecute) {
+                try {
+                    const payload = {
+                        contatos: job.contatos,
+                        mensagem: job.mensagem,
+                        apiKey: job.apiKey
+                    };
+
+                    await fetch(job.webhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    mostrarStatus(`✅ Disparo agendado executado com sucesso!`, 'success');
+                } catch (error) {
+                    console.error('Erro ao executar disparo agendado:', error);
+                }
+
+                // Remove o job executado
+                scheduledJobs = scheduledJobs.filter(j => j.id !== job.id);
+            }
+
+            localStorage.setItem('scheduledJobs', JSON.stringify(scheduledJobs));
+            renderScheduledJobs();
+        }
+
+        // Verifica agendamentos a cada minuto
+        setInterval(checkScheduledJobs, 60000);
+
+        // Renderiza agendamentos ao carregar a página
+        renderScheduledJobs();
+        checkScheduledJobs(); // Verifica imediatamente ao carregar
+    </script>
+</body>
+
+</html>
