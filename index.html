@@ -1157,37 +1157,44 @@
             if (!apiKey) return showToast("Chave API master não configurada.", "error");
 
             document.getElementById('qrModal').style.display = 'flex';
-            document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 12px;">Gerando...</div>';
-            document.getElementById('connectionStatus').textContent = "⏳ Gerando conexão...";
+            document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 12px; text-align: center;">Iniciando instância...</div>';
+            document.getElementById('connectionStatus').textContent = "⏳ Configurando servidor...";
 
             try {
-                // 1. Tentar criar instância (se não existir, cria. se existir, dá erro mas seguimos)
+                // 1. Tentar criar instância (ignoramos erros de 'já existe')
                 await fetch(`${EVOLUTION_URL}/instance/create`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'apikey': apiKey },
                     body: JSON.stringify({ instanceName: instance, token: apiKey, qrcode: true })
                 });
 
+                // Pequeno delay para o servidor processar a criação
+                await new Promise(r => setTimeout(r, 1500));
+
                 // 2. Buscar o QR Code
-                const response = fetch(`${EVOLUTION_URL}/instance/connect/${instance}`, {
+                const response = await fetch(`${EVOLUTION_URL}/instance/connect/${instance}`, {
                     headers: { 'apikey': apiKey }
-                }).then(res => res.json()).then(data => {
-                    if (data.base64) {
-                        document.getElementById('qrContainer').innerHTML = `<img src="${data.base64}" alt="QR Code">`;
-                        document.getElementById('connectionStatus').textContent = "📸 Escaneie o código acima";
-                        startStatusPolling(instance, apiKey);
-                    } else if (data.status === "open") {
-                        document.getElementById('connectionStatus').textContent = "✅ Já Conectado!";
-                        setTimeout(closeQRModal, 2000);
-                    } else {
-                        throw new Error("Erro ao gerar QR");
-                    }
                 });
+                const data = await response.json();
+
+                if (data.base64) {
+                    document.getElementById('qrContainer').innerHTML = `<img src="${data.base64}" alt="QR Code" style="width: 100%; height: 100%; object-fit: contain;">`;
+                    document.getElementById('connectionStatus').textContent = "📸 Escaneie o código acima";
+                    startStatusPolling(instance, apiKey);
+                } else if (data.status === "open" || (data.instance && data.instance.state === "open")) {
+                    document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 40px;">✅</div>';
+                    document.getElementById('connectionStatus').textContent = "✅ WhatsApp já conectado!";
+                    setTimeout(closeQRModal, 2000);
+                } else {
+                    console.error("Resposta API:", data);
+                    document.getElementById('qrContainer').innerHTML = `<div style="color: #000; font-size: 11px; padding: 20px;">O servidor não retornou o QR Code. Erro: ${data.message || 'Desconhecido'}</div>`;
+                    document.getElementById('connectionStatus').textContent = "⚠️ Tente novamente";
+                }
 
             } catch (err) {
-                console.error(err);
-                showToast("Erro ao conectar com a Evolution API.", "error");
-                closeQRModal();
+                console.error("Erro na conexão:", err);
+                document.getElementById('qrContainer').innerHTML = `<div style="color: #000; font-size: 11px; padding: 20px;">Falha na rede ou servidor offline.<br>${err.message}</div>`;
+                document.getElementById('connectionStatus').textContent = "❌ Erro de Conexão";
             }
         }
 
