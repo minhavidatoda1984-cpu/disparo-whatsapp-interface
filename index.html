@@ -4,8 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Disparo WhatsApp - Evolution API</title>
+    <title>MG Sender - WhatsApp Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #25D366;
+            --primary-dark: #128C7E;
+            --accent: #667eea;
+            --accent-dark: #764ba2;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,463 +28,534 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top left, #1e293b, #0f172a);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Background Effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -10%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            filter: blur(150px);
+            opacity: 0.15;
+            z-index: -1;
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            max-width: 900px;
             width: 100%;
             overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         .header {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            padding: 30px;
+            padding: 40px 30px;
             text-align: center;
-            color: white;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
         }
 
         .header p {
-            opacity: 0.9;
-            font-size: 14px;
+            color: var(--text-muted);
+            font-size: 15px;
+            letter-spacing: 0.5px;
         }
 
         .content {
-            padding: 40px;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
         }
 
         .config-section {
-            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--glass-border);
         }
 
         .config-section h2 {
-            color: #333;
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .config-icon {
-            width: 24px;
-            height: 24px;
-            background: #25D366;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 14px;
-        }
-
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: var(--text-muted);
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         input[type="text"],
-        input[type="file"],
+        input[type="date"],
+        input[type="time"],
         textarea {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
             font-size: 14px;
-            transition: all 0.3s;
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
         }
 
         input[type="text"]:focus,
         textarea:focus {
             outline: none;
-            border-color: #25D366;
-            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.1);
         }
 
         textarea {
-            resize: vertical;
+            resize: none;
             min-height: 120px;
         }
 
-        .file-upload {
+        /* File Upload Styling */
+        .file-upload-wrapper {
             position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-
-        input[type="file"] {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
             cursor: pointer;
         }
 
-        .char-counter {
-            text-align: right;
-            font-size: 12px;
-            color: #999;
-            margin-top: 5px;
+        .file-upload-wrapper:hover {
+            border-color: var(--primary);
+            background: rgba(37, 211, 102, 0.05);
         }
 
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            pointer-events: none;
+        }
+
+        .file-upload-info span {
+            font-size: 13px;
+        }
+
+        .icon-plus {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        /* Info & Variable Pills */
+        .variable-tips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .variable-pill {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: copy;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .variable-pill:hover {
+            background: var(--primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Status & Logs */
         .preview-section {
-            background: #f8f9fa;
+            grid-column: span 2;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
             padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            margin-top: 10px;
+            border: 1px solid var(--glass-border);
         }
 
-        .preview-section h3 {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 15px;
+        @media (max-width: 768px) {
+            .preview-section {
+                grid-column: span 1;
+            }
         }
 
         .preview-list {
-            max-height: 200px;
+            max-height: 150px;
             overflow-y: auto;
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
+            margin-top: 15px;
         }
 
         .preview-item {
-            padding: 8px;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 14px;
+            padding: 10px;
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 13px;
         }
 
         .preview-item:last-child {
             border-bottom: none;
         }
 
-        .preview-checkbox {
-            flex-shrink: 0;
-        }
-
-        .preview-checkbox input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .preview-info {
-            flex: 1;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .preview-name {
-            font-weight: 500;
-            color: #333;
-        }
-
-        .preview-phone {
-            color: #666;
-        }
-
-        .select-all-container {
-            padding: 10px;
-            background: #f0f0f0;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .select-all-container label {
-            cursor: pointer;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .send-log {
-            margin-top: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            max-height: 300px;
-            overflow-y: auto;
+        /* Progress Bar */
+        .progress-container {
+            grid-column: span 2;
             display: none;
-        }
-
-        .send-log h4 {
-            color: #333;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .log-item {
-            padding: 8px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .log-success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .log-error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .log-pending {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        button {
-            flex: 1;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-send {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            color: white;
-        }
-
-        .btn-send:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
-        }
-
-        .btn-send:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-clear {
-            background: #f0f0f0;
-            color: #666;
-        }
-
-        .btn-clear:hover {
-            background: #e0e0e0;
-        }
-
-        .btn-schedule {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-schedule:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .scheduling-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .scheduling-section h3 {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        .scheduling-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        input[type="date"],
-        input[type="time"] {
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        input[type="date"]:focus,
-        input[type="time"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .scheduled-list {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border: 1px solid #ffc107;
-        }
-
-        .scheduled-list h4 {
-            color: #856404;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .scheduled-item {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #ffc107;
-        }
-
-        .scheduled-item-info {
-            flex: 1;
-        }
-
-        .scheduled-item-time {
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .scheduled-item-details {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .btn-cancel-schedule {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-
-        .btn-cancel-schedule:hover {
-            background: #c82333;
-        }
-
-        .status-message {
             margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .status-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .status-loading {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .info-box {
-            background: #e7f3ff;
-            border-left: 4px solid #2196F3;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            color: #0c5460;
         }
 
         .progress-bar {
             width: 100%;
-            height: 30px;
-            background: #f0f0f0;
-            border-radius: 15px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
             overflow: hidden;
-            margin-top: 15px;
-            display: none;
+            border: 1px solid var(--glass-border);
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #25D366 0%, #128C7E 100%);
+            background: linear-gradient(90deg, var(--primary), var(--accent));
             width: 0%;
-            transition: width 0.3s;
+            transition: width 0.4s ease;
+        }
+
+        /* Buttons */
+        .button-group {
+            grid-column: span 2;
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: black;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
+        }
+
+        .btn-accent {
+            background: rgba(255, 255, 255, 0.05);
             color: white;
-            font-size: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-accent:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Notifications */
+        .status-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            background: #1e293b;
+            border: 1px solid var(--glass-border);
+            display: none;
+            animation: slideUp 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .media-preview-item {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .remove-media {
+            color: #ef4444;
+            cursor: pointer;
+        }
+
+        /* Login Overlay */
+        .login-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 16px;
+            transition: all 0.5s ease;
+        }
+
+        .login-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .login-box h3 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .login-box input {
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-login {
+            width: 100%;
+            background: var(--primary);
+            color: #000;
+            margin-top: 10px;
+        }
+
+        .locked-content {
+            filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .unlocked .locked-content {
+            filter: none;
+            pointer-events: auto;
+            user-select: auto;
+        }
+
+        /* Tabs System */
+        .tabs-header {
+            display: flex;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0 20px;
+        }
+
+        .tab-btn {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
             font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            transition: 0.3s;
+            flex: none;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Maps Search styles */
+        .maps-results {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .maps-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .maps-item:last-child {
+            border-bottom: none;
+        }
+
+        .maps-info h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .maps-info p {
+            font-size: 12px;
+            color: var(--text-muted);
         }
     </style>
 </head>
@@ -477,138 +563,249 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Sistema de Disparo WhatsApp</h1>
-            <p>Evolution API + N8N</p>
+            <h1 id="title-main">MG Sender <span style="font-weight: 300; opacity: 0.5;">v2.0</span></h1>
+            <p>DESIGN PREMIUM &bull; DISPARO INTELIGENTE &bull; MULTI-MÍDIA</p>
         </div>
 
-        <div class="content">
-            <div class="info-box">
-                ℹ️ <strong>Instruções:</strong> Configure sua API Evolution, carregue o arquivo Excel com os contatos e
-                digite a mensagem para envio em massa.
-            </div>
+        <div class="tabs-header">
+            <button id="btn-tab-sender" class="tab-btn active" onclick="switchTab('sender')">🔥 DISPARO EM
+                MASSA</button>
+            <button id="btn-tab-maps" class="tab-btn" onclick="switchTab('maps')">📍 EXTRAÇÃO MAPS</button>
+        </div>
 
-            <div class="config-section">
-                <h2>
-                    <span class="config-icon">⚙️</span>
-                    Configurações da API
-                </h2>
-
-                <div class="form-group">
-                    <label for="n8nWebhook">URL do Webhook N8N:</label>
-                    <input type="text" id="n8nWebhook" placeholder="https://seu-n8n.com/webhook/disparo-whatsapp"
-                        value="https://n8n.naturaisterravida.com.br/webhook/conexao-limpa-v1">
-                </div>
-
-                <div class="form-group">
-                    <label for="apiKey">API Key Evolution (opcional):</label>
-                    <input type="text" id="apiKey" placeholder="Sua chave de API"
-                        value="f98fed17beccac0149db6cfe6bfb7fff">
-                </div>
-            </div>
-
-            <div class="config-section">
-                <h2>
-                    <span class="config-icon">📋</span>
-                    Lista de Contatos
-                </h2>
-
-                <div class="form-group">
-                    <label for="excelFile">Arquivo Excel (.xlsx):</label>
-                    <input type="file" id="excelFile" accept=".xlsx,.xls" />
-                </div>
-
-                <div class="preview-section" id="previewSection" style="display: none;">
-                    <h3>📊 Preview dos Contatos</h3>
-                    <div class="select-all-container">
-                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" checked>
-                        <label for="selectAll">Selecionar Todos</label>
-                    </div>
-                    <div class="preview-list" id="previewList"></div>
-                    <p style="margin-top: 10px; font-size: 13px; color: #666;">
-                        Total: <strong id="totalContacts">0</strong> contatos |
-                        Selecionados: <strong id="selectedCount">0</strong>
-                    </p>
-                </div>
-
-                <div class="send-log" id="sendLog">
-                    <h4>📋 Log de Envio:</h4>
-                    <div id="logItems"></div>
-                </div>
-            </div>
-
-            <div class="config-section">
-                <h2>
-                    <span class="config-icon">💬</span>
-                    Mensagem
-                </h2>
-
-                <div class="form-group">
-                    <label for="message">Digite sua mensagem:</label>
-                    <textarea id="message"
-                        placeholder="Olá {nome}, tudo bem? Esta é uma mensagem personalizada..."></textarea>
-                    <div class="char-counter">
-                        <span id="charCount">0</span> caracteres
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    💡 <strong>Dica:</strong> Use <code>{nome}</code> para personalizar a mensagem com o nome do
-                    contato.
-                </div>
-
-                <div class="scheduling-section">
-                    <h3>⏰ Agendamento (Opcional)</h3>
-                    <div class="scheduling-inputs">
-                        <div class="form-group">
-                            <label for="scheduleDate">Data:</label>
-                            <input type="date" id="scheduleDate">
+        <!-- Tab 1: MG Sender -->
+        <div id="tab-sender" class="tab-pane active">
+            <div class="content">
+                <!-- Coluna 1: Configurações e Arquivos -->
+                <div class="column">
+                    <div class="config-section" style="position: relative; overflow: hidden;" id="apiConfigSection">
+                        <div id="loginOverlay" class="login-overlay">
+                            <div class="login-box">
+                                <h3>Acesso Restrito</h3>
+                                <input type="text" id="userLogin" placeholder="Usuário">
+                                <input type="password" id="passLogin" placeholder="Senha"
+                                    style="width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: white; margin-bottom: 12px;">
+                                <button class="btn-login" onclick="checkLogin()">ENTRAR</button>
+                            </div>
                         </div>
+                        <div class="locked-content">
+                            <h2>⚙️ API & Conexão</h2>
+                            <div class="form-group">
+                                <label>Webhook URL (N8N)</label>
+                                <input type="text" id="n8nWebhook" placeholder="https://..."
+                                    value="https://n8n.naturaisterravida.com.br/webhook/conexao-limpa-v1">
+                            </div>
+                            <div class="form-group">
+                                <label>API Key Evolution</label>
+                                <input type="text" id="apiKey" placeholder="Sua Chave"
+                                    value="f98fed17beccac0149db6cfe6bfb7fff">
+                            </div>
+                            <div class="form-group">
+                                <label>Instância Evolution</label>
+                                <input type="text" id="instanceName" placeholder="Ex: assessor_prosperazap"
+                                    value="assessor_prosperazap">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="config-section" style="margin-top: 20px;">
+                        <h2>📋 Lista de Clientes</h2>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="excelFile" accept=".xlsx,.xls">
+                            <div class="file-upload-info">
+                                <div class="icon-plus">📁</div>
+                                <span id="fileNameDisplay">Arraste seu Excel ou clique aqui</span>
+                                <span style="opacity: 0.5; font-size: 11px;">(Colunas recomendadas: Nome,
+                                    Telefone)</span>
+                            </div>
+                        </div>
+
+                        <div class="preview-section" id="previewSection" style="display: none; margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 12px; color: var(--primary);">Total: <strong
+                                        id="totalContacts">0</strong></span>
+                                <label
+                                    style="margin: 0; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" checked>
+                                    <span style="font-size: 12px;">Todos</span>
+                                </label>
+                            </div>
+                            <div class="preview-list" id="previewList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 2: Mensagem e Mídia -->
+                <div class="column">
+                    <div class="config-section">
+                        <h2>💬 Mensagem Personalizada</h2>
                         <div class="form-group">
-                            <label for="scheduleTime">Hora:</label>
+                            <label>Sua Mensagem</label>
+                            <textarea id="message"
+                                placeholder="Olá {nome}, seu vencimento no dia {vencimento} está próximo..."></textarea>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                                <div class="variable-tips" id="variableTips">
+                                    <span class="variable-pill" onclick="insertVar('{nome}')">{nome}</span>
+                                </div>
+                                <span style="font-size: 11px; color: var(--text-muted);"><span id="charCount">0</span>
+                                    caracteres</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <label>Anexar Mídia (Imagem/PDF/Vídeo)</label>
+                            <div class="file-upload-wrapper" style="padding: 10px;">
+                                <input type="file" id="mediaFile"
+                                    accept="image/*,application/pdf,video/*,audio/mpeg,audio/ogg">
+                                <span id="mediaNameDisplay" style="font-size: 12px; color: var(--text-muted);">Clique
+                                    para
+                                    anexar arquivo</span>
+                            </div>
+                            <label style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="isAudio" style="width: auto;">
+                                <span style="font-size: 12px;">Enviar como Áudio Gravado (apenas .mp3/.ogg)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="config-section" style="margin-top: 20px;">
+                        <h2>⏰ Agendamento</h2>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <input type="date" id="scheduleDate">
                             <input type="time" id="scheduleTime">
                         </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Delay entre Texto e Mídia (segundos)</label>
+                            <input type="number" id="msgDelay" value="3" min="0" max="60"
+                                style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; border-radius: 8px;">
+                        </div>
                     </div>
                 </div>
 
-                <div id="scheduledList" class="scheduled-list" style="display: none;">
-                    <h4>📋 Disparos Agendados:</h4>
-                    <div id="scheduledItems"></div>
+                <div class="progress-container" id="progressContainer">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px;">
+                        <span id="progressStatus">Enviando...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-danger" style="flex: 0.3;" onclick="limparFormulario()">LIMPAR</button>
+                    <button class="btn-accent" id="btnSchedule" onclick="agendarDisparo()">AGENDAR DISPARO</button>
+                    <button class="btn-primary" id="btnSend" onclick="iniciarDisparo()">🔥 DISPARO IMEDIATO</button>
                 </div>
             </div>
+        </div>
 
-            <div class="button-group">
-                <button class="btn-clear" onclick="limparFormulario()">
-                    🗑️ Limpar
-                </button>
-                <button class="btn-schedule" id="btnSchedule" onclick="agendarDisparo()">
-                    <span>⏰ Agendar Disparo</span>
-                </button>
-                <button class="btn-send" id="btnSend" onclick="iniciarDisparo()">
-                    <span>📤 Disparo Imediato</span>
-                </button>
+        <!-- Tab 2: Google Maps Leads -->
+        <div id="tab-maps" class="tab-pane">
+            <div class="content" style="grid-template-columns: 1fr;">
+                <div class="config-section">
+                    <h2>📍 Extração de Leads Google Maps</h2>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label>O que você procura? (Ex: Dentistas em São Paulo)</label>
+                            <input type="text" id="mapsQuery" placeholder="Ex: Pet Shops em Curitiba">
+                        </div>
+                        <div style="align-self: flex-end; margin-bottom: 18px;">
+                            <button class="btn-primary" onclick="searchMaps()" id="btnMapsSearch">🔍 BUSCAR
+                                LEADS</button>
+                        </div>
+                    </div>
+
+                    <div id="mapsResultsCount" style="font-size: 13px; color: var(--primary); display: none;">
+                        Encontrados: <strong id="totalMapsLeads">0</strong> leads
+                    </div>
+
+                    <div class="maps-results" id="mapsResultsList">
+                        <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+                            Faça uma busca para carregar leads do Google Maps
+                        </div>
+                    </div>
+
+                    <div class="button-group" style="margin-top: 20px;">
+                        <button class="btn-primary" onclick="importLeadsToSender()" id="btnImportLeads" disabled>📥
+                            IMPORTAR SELECIONADOS PARA O DISPARO</button>
+                    </div>
+                </div>
             </div>
-
-            <div class="progress-bar" id="progressBar">
-                <div class="progress-fill" id="progressFill">0%</div>
-            </div>
-
-            <div class="status-message" id="statusMessage"></div>
         </div>
     </div>
+
+    <div class="status-toast" id="statusToast"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         let contatosData = [];
+        let base64Media = null;
+        let mediaFileName = null;
+        let mediaMimeType = null;
 
-        // Contador de caracteres
+        // Carregar configurações salvas
+        window.addEventListener('load', () => {
+            const savedWebhook = localStorage.getItem('mg_webhook');
+            const savedKey = localStorage.getItem('mg_apikey');
+            const savedInstance = localStorage.getItem('mg_instance');
+
+            if (savedWebhook) document.getElementById('n8nWebhook').value = savedWebhook;
+            if (savedKey) document.getElementById('apiKey').value = savedKey;
+            if (savedInstance) document.getElementById('instanceName').value = savedInstance;
+        });
+
+        function saveConfig() {
+            localStorage.setItem('mg_webhook', document.getElementById('n8nWebhook').value);
+            localStorage.setItem('mg_apikey', document.getElementById('apiKey').value);
+            localStorage.setItem('mg_instance', document.getElementById('instanceName').value);
+        }
+
+        // Lógica de Login
+        function checkLogin() {
+            const user = document.getElementById('userLogin').value;
+            const pass = document.getElementById('passLogin').value;
+
+            if (user === 'magnogomes' && pass === 'magnogomes') {
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('apiConfigSection').classList.add('unlocked');
+                showToast('Acesso liberado!');
+            } else {
+                showToast('Login ou senha incorretos.', 'error');
+            }
+        }
+
+        // Contador e Auto-resize
         document.getElementById('message').addEventListener('input', function () {
             document.getElementById('charCount').textContent = this.value.length;
         });
 
-        // Processar arquivo Excel
+        function insertVar(v) {
+            const area = document.getElementById('message');
+            area.value += v;
+            area.focus();
+        }
+
+        // Validação e Limpeza de Telefone
+        function limparTelefone(tel) {
+            if (!tel) return "";
+            // Remove tudo que não é número
+            let clean = String(tel).replace(/\D/g, "");
+
+            // Se o número não começar com 55 e tiver 10 ou 11 dígitos, adiciona 55
+            if (clean.length >= 10 && clean.length <= 11 && !clean.startsWith("55")) {
+                clean = "55" + clean;
+            }
+
+            return clean;
+        }
+
+        // Processar Excel com Multi-Variáveis
         document.getElementById('excelFile').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
+            document.getElementById('fileNameDisplay').textContent = file.name;
 
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -618,326 +815,300 @@
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
-                    contatosData = jsonData.map(row => ({
-                        nome: row['Nome '] || row['Nome'] || row['nome'] || '',
-                        telefone: String(row['telefone'] || row['Telefone'] || row['TELEFONE'] || '').trim()
-                    })).filter(c => c.telefone);
+                    if (jsonData.length > 0) {
+                        // Detectar colunas para variáveis
+                        const columns = Object.keys(jsonData[0]);
+                        const tips = document.getElementById('variableTips');
+                        tips.innerHTML = columns
+                            .filter(c => !c.toLowerCase().includes('telefone'))
+                            .map(c => `<span class="variable-pill" onclick="insertVar('{${c}}')">{${c}}</span>`)
+                            .join('');
 
-                    mostrarPreview();
+                        contatosData = jsonData.map(row => {
+                            // Encontrar coluna de telefone de forma inteligente
+                            const telKey = columns.find(c => {
+                                const lower = c.toLowerCase();
+                                return lower.includes('tel') || lower.includes('cel') || lower.includes('fone') || lower.includes('whats') || lower.includes('number');
+                            }) || columns[0];
+
+                            // Encontrar coluna de nome de forma inteligente
+                            const nomeKey = columns.find(c => {
+                                const lower = c.toLowerCase();
+                                return lower.includes('nome') || lower.includes('name') || lower.includes('lead') || lower.includes('cliente') || lower.includes('contato');
+                            });
+
+                            const phone = limparTelefone(row[telKey]);
+                            const nomeEncontrado = nomeKey ? row[nomeKey] : null;
+
+                            return { ...row, _telefone_limpo: phone, _nome_exibicao: nomeEncontrado };
+                        }).filter(c => c._telefone_limpo);
+
+                        mostrarPreview();
+                        showToast(`Sucesso: ${contatosData.length} contatos carregados.`);
+                    }
                 } catch (error) {
-                    mostrarStatus('Erro ao processar arquivo Excel: ' + error.message, 'error');
+                    showToast('Erro ao processar Excel: ' + error.message, 'error');
                 }
             };
             reader.readAsArrayBuffer(file);
         });
 
+        // Conversão de Mídia para Base64
+        document.getElementById('mediaFile').addEventListener('change', async function (e) {
+            const file = e.target.files[0];
+            if (!file) {
+                base64Media = null;
+                return;
+            }
+            document.getElementById('mediaNameDisplay').textContent = file.name;
+            mediaFileName = file.name;
+            mediaMimeType = file.type;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const fullBase64 = e.target.result;
+                base64Media = fullBase64.split(',')[1];
+            };
+            reader.readAsDataURL(file);
+        });
+
         function mostrarPreview() {
             if (contatosData.length === 0) return;
-
-            document.getElementById('previewSection').style.display = 'block';
+            const previewSection = document.getElementById('previewSection');
+            previewSection.style.display = 'block';
             document.getElementById('totalContacts').textContent = contatosData.length;
 
             const previewList = document.getElementById('previewList');
-            previewList.innerHTML = contatosData.map((contato, index) => `
+            previewList.innerHTML = contatosData.map((c, i) => `
                 <div class="preview-item">
-                    <div class="preview-checkbox">
-                        <input type="checkbox" class="contact-checkbox" data-index="${index}" onchange="updateSelectedCount()" checked>
-                    </div>
-                    <div class="preview-info">
-                        <span class="preview-name">${contato.nome}</span>
-                        <span class="preview-phone">${contato.telefone}</span>
+                    <input type="checkbox" class="contact-checkbox" data-index="${i}" checked>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 600;">${c._nome_exibicao || 'Sem Nome'}</span>
+                        <span style="font-size: 11px; opacity: 0.7;">+${c._telefone_limpo}</span>
                     </div>
                 </div>
             `).join('');
-
-            updateSelectedCount();
         }
 
         function toggleSelectAll() {
-            const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('.contact-checkbox');
-            checkboxes.forEach(cb => cb.checked = selectAll.checked);
-            updateSelectedCount();
+            const state = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = state);
         }
 
-        function updateSelectedCount() {
-            const checkboxes = document.querySelectorAll('.contact-checkbox:checked');
-            document.getElementById('selectedCount').textContent = checkboxes.length;
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('statusToast');
+            toast.textContent = msg;
+            toast.style.borderColor = type === 'success' ? 'var(--primary)' : '#ef4444';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 4000);
         }
 
         async function iniciarDisparo() {
             const webhookUrl = document.getElementById('n8nWebhook').value.trim();
-            const mensagem = document.getElementById('message').value.trim();
+            const msgTemplate = document.getElementById('message').value.trim();
             const apiKey = document.getElementById('apiKey').value.trim();
+            const instanceName = document.getElementById('instanceName').value.trim();
+            const msgDelay = document.getElementById('msgDelay').value || 3;
+            const selectedBoxes = Array.from(document.querySelectorAll('.contact-checkbox:checked'));
+            const isAudio = document.getElementById('isAudio').checked;
 
-            if (!webhookUrl) {
-                mostrarStatus('Por favor, informe a URL do Webhook N8N', 'error');
+            if (!webhookUrl || !msgTemplate || selectedBoxes.length === 0) {
+                showToast('Preencha os campos obrigatórios e selecione contatos.', 'error');
                 return;
             }
 
-            if (!mensagem) {
-                mostrarStatus('Por favor, digite uma mensagem', 'error');
-                return;
-            }
+            saveConfig(); // Salva as chaves antes de enviar
 
-            // Pega apenas os contatos selecionados
-            const selectedCheckboxes = document.querySelectorAll('.contact-checkbox:checked');
-            if (selectedCheckboxes.length === 0) {
-                mostrarStatus('Por favor, selecione pelo menos um contato', 'error');
-                return;
-            }
+            const btn = document.getElementById('btnSend');
+            btn.disabled = true;
+            document.getElementById('progressContainer').style.display = 'block';
 
-            const selectedContacts = Array.from(selectedCheckboxes).map(cb => {
-                const index = parseInt(cb.dataset.index);
-                return contatosData[index];
-            });
+            const total = selectedBoxes.length;
+            let count = 0;
 
-            const btnSend = document.getElementById('btnSend');
-            btnSend.disabled = true;
-            btnSend.innerHTML = '<div class="spinner"></div> <span>Enviando...</span>';
+            for (const box of selectedBoxes) {
+                const index = box.dataset.index;
+                const contato = contatosData[index];
 
-            // Mostra o log de envio
-            const sendLog = document.getElementById('sendLog');
-            const logItems = document.getElementById('logItems');
-            sendLog.style.display = 'block';
-            logItems.innerHTML = '';
+                let mensagemFinal = msgTemplate;
+                Object.keys(contato).forEach(key => {
+                    mensagemFinal = mensagemFinal.replace(new RegExp(`{${key}}`, 'g'), contato[key]);
+                });
 
-            mostrarStatus(`Iniciando disparo para ${selectedContacts.length} contato(s)...`, 'loading');
-            document.getElementById('progressBar').style.display = 'block';
-
-            try {
                 const payload = {
-                    contatos: selectedContacts,
-                    mensagem: mensagem,
-                    apiKey: apiKey
+                    number: contato._telefone_limpo,
+                    message: mensagemFinal,
+                    media: base64Media,
+                    mediaName: mediaFileName,
+                    mimeType: mediaMimeType,
+                    isAudio: isAudio,
+                    apiKey: apiKey,
+                    instance: instanceName,
+                    delay: msgDelay,
+                    contatoInfo: contato
                 };
 
-                // Adiciona logs pendentes
-                selectedContacts.forEach(c => {
-                    logItems.innerHTML += `
-                        <div class="log-item log-pending" id="log-${c.telefone.replace(/\D/g, '')}">
-                            ⏳ ${c.nome} (${c.telefone}) - Aguardando...
-                        </div>
-                    `;
-                });
-
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                mostrarStatus(
-                    `✅ Disparo iniciado! ${selectedContacts.length} mensagem(ns) em processamento.`,
-                    'success'
-                );
-
-                // Simula atualização dos logs
-                setTimeout(() => {
-                    selectedContacts.forEach(c => {
-                        const logItem = document.getElementById(`log-${c.telefone.replace(/\D/g, '')}`);
-                        if (logItem) {
-                            logItem.className = 'log-item log-success';
-                            logItem.innerHTML = `✅ ${c.nome} (${c.telefone}) - Enviado!`;
-                        }
+                try {
+                    await fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
                     });
-                }, 3000);
-
-                // Simular progresso
-                simularProgresso();
-
-            } catch (error) {
-                mostrarStatus('Erro ao iniciar disparo: ' + error.message, 'error');
-
-                // Marca todos como erro
-                selectedContacts.forEach(c => {
-                    const logItem = document.getElementById(`log-${c.telefone.replace(/\D/g, '')}`);
-                    if (logItem) {
-                        logItem.className = 'log-item log-error';
-                        logItem.innerHTML = `❌ ${c.nome} (${c.telefone}) - Erro`;
-                    }
-                });
-
-                btnSend.disabled = false;
-                btnSend.innerHTML = '<span>📤 Disparo Imediato</span>';
-                document.getElementById('progressBar').style.display = 'none';
-            }
-        }
-
-        function simularProgresso() {
-            let progresso = 0;
-            const total = contatosData.length;
-            const progressFill = document.getElementById('progressFill');
-
-            const interval = setInterval(() => {
-                progresso += 1;
-                const percentual = Math.min((progresso / total) * 100, 100);
-                progressFill.style.width = percentual + '%';
-                progressFill.textContent = Math.round(percentual) + '%';
-
-                if (progresso >= total) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        document.getElementById('btnSend').disabled = false;
-                        document.getElementById('btnSend').innerHTML = '<span>📤 Disparo em Massa</span>';
-                    }, 1000);
+                    count++;
+                    updateProgress(count, total);
+                } catch (e) {
+                    console.error("Erro no contato:", contato._telefone_limpo, e);
                 }
-            }, (5000 / total)); // 5 segundos para completar
+            }
+
+            showToast(`Disparo Finalizado! ${count} enviados.`);
+            btn.disabled = false;
         }
 
-        function mostrarStatus(mensagem, tipo) {
-            const statusEl = document.getElementById('statusMessage');
-            statusEl.className = 'status-message status-' + tipo;
-            statusEl.textContent = mensagem;
-            statusEl.style.display = 'block';
-
-            if (tipo === 'success' || tipo === 'error') {
-                setTimeout(() => {
-                    statusEl.style.display = 'none';
-                }, 5000);
-            }
+        function updateProgress(curr, tot) {
+            const p = (curr / tot) * 100;
+            document.getElementById('progressFill').style.width = p + '%';
+            document.getElementById('progressPercent').textContent = Math.round(p) + '%';
+            document.getElementById('progressStatus').textContent = `Enviando ${curr} de ${tot}...`;
         }
 
         function limparFormulario() {
-            document.getElementById('message').value = '';
-            document.getElementById('excelFile').value = '';
-            document.getElementById('charCount').textContent = '0';
-            document.getElementById('previewSection').style.display = 'none';
-            document.getElementById('statusMessage').style.display = 'none';
-            document.getElementById('progressBar').style.display = 'none';
-            document.getElementById('scheduleDate').value = '';
-            document.getElementById('scheduleTime').value = '';
-            contatosData = [];
+            if (confirm("Deseja realmente limpar tudo?")) {
+                location.reload();
+            }
         }
-
-        // ===== FUNCIONALIDADES DE AGENDAMENTO =====
-        let scheduledJobs = JSON.parse(localStorage.getItem('scheduledJobs') || '[]');
 
         function agendarDisparo() {
-            const scheduleDate = document.getElementById('scheduleDate').value;
-            const scheduleTime = document.getElementById('scheduleTime').value;
-            const mensagem = document.getElementById('message').value.trim();
-            const webhookUrl = document.getElementById('n8nWebhook').value.trim();
-
-            if (!scheduleDate || !scheduleTime) {
-                mostrarStatus('Por favor, selecione data e hora para o agendamento', 'error');
+            const date = document.getElementById('scheduleDate').value;
+            const time = document.getElementById('scheduleTime').value;
+            if (!date || !time) {
+                showToast("Selecione data e hora para agendar.", "error");
                 return;
             }
+            showToast(`Agendado com sucesso para ${date} às ${time}! (Mantenha esta aba aberta)`);
 
-            if (!mensagem) {
-                mostrarStatus('Por favor, digite uma mensagem', 'error');
-                return;
-            }
-
-            if (contatosData.length === 0) {
-                mostrarStatus('Por favor, carregue um arquivo Excel com contatos', 'error');
-                return;
-            }
-
-            const scheduledDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
-            const now = new Date();
-
-            if (scheduledDateTime <= now) {
-                mostrarStatus('A data/hora deve ser no futuro', 'error');
-                return;
-            }
-
-            const job = {
-                id: Date.now(),
-                scheduledTime: scheduledDateTime.getTime(),
-                date: scheduleDate,
-                time: scheduleTime,
-                contatos: [...contatosData],
-                mensagem: mensagem,
-                webhookUrl: webhookUrl,
-                apiKey: document.getElementById('apiKey').value.trim()
-            };
-
-            scheduledJobs.push(job);
-            localStorage.setItem('scheduledJobs', JSON.stringify(scheduledJobs));
-
-            renderScheduledJobs();
-            mostrarStatus(`✅ Disparo agendado para ${scheduleDate} às ${scheduleTime}`, 'success');
+            const targetTime = new Date(`${date}T${time}`).getTime();
+            const check = setInterval(() => {
+                if (Date.now() >= targetTime) {
+                    clearInterval(check);
+                    iniciarDisparo();
+                }
+            }, 30000);
         }
 
-        function renderScheduledJobs() {
-            const container = document.getElementById('scheduledItems');
-            const listDiv = document.getElementById('scheduledList');
+        // --- GOOGLE MAPS LOGIC ---
+        let mapsLeads = [];
+        let placesService;
 
-            if (scheduledJobs.length === 0) {
-                listDiv.style.display = 'none';
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            const pane = document.getElementById(`tab-${tab}`);
+            const btn = document.getElementById(`btn-tab-${tab}`);
+
+            if (pane) pane.classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        function initAutocomplete() {
+            // Callback do Google Maps
+            placesService = new google.maps.places.PlacesService(document.createElement('div'));
+        }
+
+        async function searchMaps() {
+            const query = document.getElementById('mapsQuery').value;
+            if (!query) return showToast("Digite o que procura.", "error");
+
+            const btn = document.getElementById('btnMapsSearch');
+            btn.disabled = true;
+            btn.textContent = "🔍 BUSCANDO...";
+
+            mapsLeads = []; // Limpar anterior
+            renderMapsResults();
+
+            const request = { query: query };
+
+            placesService.textSearch(request, async (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    showToast(`Buscando detalhes de ${results.length} locais...`);
+
+                    for (const place of results) {
+                        await new Promise(resolve => {
+                            placesService.getDetails({
+                                placeId: place.place_id,
+                                fields: ['name', 'formatted_phone_number', 'formatted_address']
+                            }, (details, dStatus) => {
+                                if (dStatus === google.maps.places.PlacesServiceStatus.OK && details.formatted_phone_number) {
+                                    mapsLeads.push({
+                                        nome: details.name,
+                                        telefone: details.formatted_phone_number,
+                                        address: details.formatted_address
+                                    });
+                                    renderMapsResults(); // Update real-time
+                                }
+                                // Pequeno delay para evitar Rate Limit da API do Google
+                                setTimeout(resolve, 200);
+                            });
+                        });
+                    }
+
+                    btn.disabled = false;
+                    btn.textContent = "🔍 BUSCAR LEADS";
+                    showToast(`Busca finalizada! ${mapsLeads.length} leads com telefone.`);
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = "🔍 BUSCAR LEADS";
+                    showToast("Erro na busca: " + status, "error");
+                }
+            });
+        }
+
+        function renderMapsResults() {
+            const list = document.getElementById('mapsResultsList');
+            document.getElementById('mapsResultsCount').style.display = 'block';
+            document.getElementById('totalMapsLeads').textContent = mapsLeads.length;
+            document.getElementById('btnImportLeads').disabled = mapsLeads.length === 0;
+
+            if (mapsLeads.length === 0) {
+                list.innerHTML = '<div style="padding: 20px; text-align: center;">Nenhum lead com telefone encontrado.</div>';
                 return;
             }
 
-            listDiv.style.display = 'block';
-            container.innerHTML = scheduledJobs.map(job => `
-                <div class="scheduled-item">
-                    <div class="scheduled-item-info">
-                        <div class="scheduled-item-time">📅 ${job.date} às ${job.time}</div>
-                        <div class="scheduled-item-details">${job.contatos.length} contatos</div>
+            list.innerHTML = mapsLeads.map((lead, i) => `
+                <div class="maps-item">
+                    <div class="maps-info">
+                        <h4>${lead.nome}</h4>
+                        <p>${lead.telefone} | ${lead.address || ''}</p>
                     </div>
-                    <button class="btn-cancel-schedule" onclick="cancelScheduledJob(${job.id})">
-                        ❌ Cancelar
-                    </button>
+                    <input type="checkbox" class="maps-checkbox" data-index="${i}" checked>
                 </div>
             `).join('');
         }
 
-        function cancelScheduledJob(jobId) {
-            scheduledJobs = scheduledJobs.filter(job => job.id !== jobId);
-            localStorage.setItem('scheduledJobs', JSON.stringify(scheduledJobs));
-            renderScheduledJobs();
-            mostrarStatus('Agendamento cancelado', 'success');
+        function importLeadsToSender() {
+            const selectedIdx = Array.from(document.querySelectorAll('.maps-checkbox:checked')).map(cb => cb.dataset.index);
+            if (selectedIdx.length === 0) return showToast("Selecione ao menos um lead.", "error");
+
+            const imported = selectedIdx.map(idx => {
+                const lead = mapsLeads[idx];
+                const phone = limparTelefone(lead.telefone);
+                return {
+                    nome: lead.nome,
+                    telefone: lead.telefone,
+                    _telefone_limpo: phone,
+                    _nome_exibicao: lead.nome
+                };
+            });
+
+            contatosData = [...contatosData, ...imported];
+            mostrarPreview();
+            switchTab('sender');
+            showToast(`${imported.length} leads importados para o disparo!`);
         }
-
-        async function checkScheduledJobs() {
-            const now = Date.now();
-            const jobsToExecute = scheduledJobs.filter(job => job.scheduledTime <= now);
-
-            for (const job of jobsToExecute) {
-                try {
-                    const payload = {
-                        contatos: job.contatos,
-                        mensagem: job.mensagem,
-                        apiKey: job.apiKey
-                    };
-
-                    await fetch(job.webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    mostrarStatus(`✅ Disparo agendado executado com sucesso!`, 'success');
-                } catch (error) {
-                    console.error('Erro ao executar disparo agendado:', error);
-                }
-
-                // Remove o job executado
-                scheduledJobs = scheduledJobs.filter(j => j.id !== job.id);
-            }
-
-            localStorage.setItem('scheduledJobs', JSON.stringify(scheduledJobs));
-            renderScheduledJobs();
-        }
-
-        // Verifica agendamentos a cada minuto
-        setInterval(checkScheduledJobs, 60000);
-
-        // Renderiza agendamentos ao carregar a página
-        renderScheduledJobs();
-        checkScheduledJobs(); // Verifica imediatamente ao carregar
     </script>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWIu9AMbRBq9eAZ7B_OzjBoLjfPIfiXZg&libraries=places&callback=initAutocomplete"></script>
 </body>
 
 </html>
