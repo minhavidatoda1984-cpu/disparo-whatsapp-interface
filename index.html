@@ -604,10 +604,79 @@
             font-size: 12px;
             color: var(--text-muted);
         }
+
+        /* QR Code Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .qr-placeholder {
+            width: 250px;
+            height: 250px;
+            background: white;
+            margin: 20px auto;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .qr-placeholder img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 
 <body>
+    <div id="qrModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeQRModal()">&times;</span>
+            <h3 style="color: var(--primary); margin-bottom: 10px;">Conectar WhatsApp</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">Abra o WhatsApp > Configurações > Aparelhos Conectados
+                > Conectar um Aparelho</p>
+
+            <div class="qr-placeholder" id="qrContainer">
+                <div style="color: #000; font-size: 12px;">Gerando QR Code...</div>
+            </div>
+
+            <div id="connectionStatus" style="font-size: 14px; font-weight: 600; margin-top: 15px;">
+                ⏳ Aguardando leitura...
+            </div>
+        </div>
+    </div>
     <div class="container">
         <div class="header">
             <h1 id="title-main">MG Sender <span style="font-weight: 300; opacity: 0.5;">v2.0</span></h1>
@@ -645,7 +714,12 @@
                             </div>
                             <div class="form-group">
                                 <label>Sua Instância Evolution</label>
-                                <input type="text" id="instanceName" placeholder="Ex: minha_loja_01" value="">
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" id="instanceName" placeholder="Ex: minha_loja_01" value=""
+                                        style="background: rgba(255, 255, 255, 0.05);">
+                                    <button class="btn-primary" onclick="startQRConnection()"
+                                        style="padding: 10px; font-size: 12px; flex: none; width: auto;">CONECTAR</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1069,6 +1143,79 @@
                     iniciarDisparo();
                 }
             }, 30000);
+        }
+
+        // --- QR CODE & CONNECTION LOGIC ---
+        let statusInterval = null;
+        const EVOLUTION_URL = 'https://evolution.naturaisterravida.com.br';
+
+        async function startQRConnection() {
+            const instance = document.getElementById('instanceName').value;
+            const apiKey = document.getElementById('apiKey').value;
+
+            if (!instance) return showToast("Digite o nome da instância primeiro.", "error");
+            if (!apiKey) return showToast("Chave API master não configurada.", "error");
+
+            document.getElementById('qrModal').style.display = 'flex';
+            document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 12px;">Gerando...</div>';
+            document.getElementById('connectionStatus').textContent = "⏳ Gerando conexão...";
+
+            try {
+                // 1. Tentar criar instância (se não existir, cria. se existir, dá erro mas seguimos)
+                await fetch(`${EVOLUTION_URL}/instance/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'apikey': apiKey },
+                    body: JSON.stringify({ instanceName: instance, token: apiKey, qrcode: true })
+                });
+
+                // 2. Buscar o QR Code
+                const response = fetch(`${EVOLUTION_URL}/instance/connect/${instance}`, {
+                    headers: { 'apikey': apiKey }
+                }).then(res => res.json()).then(data => {
+                    if (data.base64) {
+                        document.getElementById('qrContainer').innerHTML = `<img src="${data.base64}" alt="QR Code">`;
+                        document.getElementById('connectionStatus').textContent = "📸 Escaneie o código acima";
+                        startStatusPolling(instance, apiKey);
+                    } else if (data.status === "open") {
+                        document.getElementById('connectionStatus').textContent = "✅ Já Conectado!";
+                        setTimeout(closeQRModal, 2000);
+                    } else {
+                        throw new Error("Erro ao gerar QR");
+                    }
+                });
+
+            } catch (err) {
+                console.error(err);
+                showToast("Erro ao conectar com a Evolution API.", "error");
+                closeQRModal();
+            }
+        }
+
+        function startStatusPolling(instance, apiKey) {
+            if (statusInterval) clearInterval(statusInterval);
+            statusInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${EVOLUTION_URL}/instance/connectionState/${instance}`, {
+                        headers: { 'apikey': apiKey }
+                    });
+                    const data = await res.json();
+
+                    if (data.instance.state === "open") {
+                        clearInterval(statusInterval);
+                        document.getElementById('connectionStatus').textContent = "✅ CONECTADO!";
+                        document.getElementById('connectionStatus').style.color = "var(--primary)";
+                        showToast("WhatsApp pareado com sucesso!");
+                        setTimeout(closeQRModal, 2000);
+                    }
+                } catch (e) {
+                    console.error("Erro no polling:", e);
+                }
+            }, 3000);
+        }
+
+        function closeQRModal() {
+            document.getElementById('qrModal').style.display = 'none';
+            if (statusInterval) clearInterval(statusInterval);
         }
 
         // --- GOOGLE MAPS LOGIC ---
