@@ -633,15 +633,23 @@
                             <button class="btn-login" onclick="checkLogin()">ACESSAR PAINEL</button>
                         </div>
                         <div class="locked-content">
+                            <div id="masterOverlay"
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(10px); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 16px; transition: 0.3s;"
+                                id="masterLock">
+                                <span style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">DADOS
+                                    SENSÍVEIS OCULTOS</span>
+                                <button class="btn-primary" style="padding: 8px 15px; font-size: 12px; width: auto;"
+                                    onclick="unlockMasterData()">🔓 REVELAR CHAVES</button>
+                            </div>
                             <h2>⚙️ Configurações Master</h2>
                             <div class="form-group">
                                 <label>Webhook URL (Central)</label>
-                                <input type="text" id="n8nWebhook" placeholder="URL n8n"
+                                <input type="password" id="n8nWebhook" placeholder="URL n8n"
                                     value="https://n8n.naturaisterravida.com.br/webhook/conexao-limpa-v1">
                             </div>
                             <div class="form-group">
                                 <label>Chave API Master (Oculta)</label>
-                                <input type="text" id="apiKey" placeholder="Sua Chave"
+                                <input type="password" id="apiKey" placeholder="Sua Chave"
                                     value="f98fed17beccac0149db6cfe6bfb7fff">
                             </div>
                         </div>
@@ -811,12 +819,25 @@
         function checkLogin() {
             const pass = document.getElementById('passLogin').value;
 
-            if (pass === '212003') {
+            if (pass === 'magnogomes') {
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('apiConfigSection').classList.add('unlocked');
-                showToast('Acesso administrativo liberado!');
+                showToast('Painel de Configurações Aberto!');
             } else {
-                showToast('Senha de administrador incorreta.', 'error');
+                showToast('Senha do Painel incorreta.', 'error');
+            }
+        }
+
+        function unlockMasterData() {
+            const masterPass = prompt("Digite a Senha Master para revelar as chaves de API:");
+
+            if (masterPass === '212003') {
+                document.getElementById('masterOverlay').style.display = 'none';
+                document.getElementById('n8nWebhook').type = 'text';
+                document.getElementById('apiKey').type = 'text';
+                showToast('Chaves Master reveladas com sucesso!');
+            } else {
+                showToast('Senha Master incorreta!', 'error');
             }
         }
 
