@@ -1199,19 +1199,24 @@
             if (!apiKey) return showToast("Chave API master não configurada.", "error");
 
             document.getElementById('qrModal').style.display = 'flex';
-            document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 12px; text-align: center;">Iniciando instância...</div>';
-            document.getElementById('connectionStatus').textContent = "⏳ Configurando servidor...";
+            document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 12px; text-align: center;">Configurando instância...</div>';
+            document.getElementById('connectionStatus').textContent = "⏳ Preparando servidor...";
 
             try {
                 // 1. Tentar criar instância (ignoramos erros de 'já existe')
-                await fetch(`${EVOLUTION_URL}/instance/create`, {
+                const createRes = await fetch(`${EVOLUTION_URL}/instance/create`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'apikey': apiKey },
-                    body: JSON.stringify({ instanceName: instance, token: apiKey, qrcode: true })
+                    body: JSON.stringify({
+                        instanceName: instance,
+                        token: apiKey,
+                        qrcode: true,
+                        integration: 'WHATSAPP-BAILEYS'
+                    })
                 });
 
                 // Pequeno delay para o servidor processar a criação
-                await new Promise(r => setTimeout(r, 1500));
+                await new Promise(r => setTimeout(r, 2000));
 
                 // 2. Buscar o QR Code
                 const response = await fetch(`${EVOLUTION_URL}/instance/connect/${instance}`, {
@@ -1224,19 +1229,22 @@
                     document.getElementById('connectionStatus').textContent = "📸 Escaneie o código acima";
                     startStatusPolling(instance, apiKey);
                 } else if (data.status === "open" || (data.instance && data.instance.state === "open")) {
-                    document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 40px;">✅</div>';
+                    document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 40px; display: flex; align-items: center; justify-content: center; height: 100%;">✅</div>';
                     document.getElementById('connectionStatus').textContent = "✅ WhatsApp já conectado!";
+                    updateConnectionUI(instance);
+                    checkInstanceStatus(instance);
                     setTimeout(closeQRModal, 2000);
                 } else {
-                    console.error("Resposta API:", data);
-                    document.getElementById('qrContainer').innerHTML = `<div style="color: #000; font-size: 11px; padding: 20px;">O servidor não retornou o QR Code. Erro: ${data.message || 'Desconhecido'}</div>`;
-                    document.getElementById('connectionStatus').textContent = "⚠️ Tente novamente";
+                    console.error("Erro detalhado da API:", data);
+                    const errorMsg = data.message || data.error || data.msg || "Erro desconhecido no servidor";
+                    document.getElementById('qrContainer').innerHTML = `<div style="color: #000; font-size: 11px; padding: 20px; word-break: break-all;">O servidor não retornou o QR Code.<br><br><b>Mensagem:</b> ${errorMsg}<br><br><b>Dica:</b> Tente um nome diferente de instância ou verifique se a API Key Master está correta.</div>`;
+                    document.getElementById('connectionStatus').textContent = "⚠️ Erro na Resposta";
                 }
 
             } catch (err) {
                 console.error("Erro na conexão:", err);
-                document.getElementById('qrContainer').innerHTML = `<div style="color: #000; font-size: 11px; padding: 20px;">Falha na rede ou servidor offline.<br>${err.message}</div>`;
-                document.getElementById('connectionStatus').textContent = "❌ Erro de Conexão";
+                document.getElementById('qrContainer').innerHTML = `<div style="color: #000; font-size: 11px; padding: 20px;">Falha na rede ou servidor offline.<br><br>${err.message}</div>`;
+                document.getElementById('connectionStatus').textContent = "❌ Falha de Rede";
             }
         }
 
