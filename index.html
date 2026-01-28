@@ -712,14 +712,21 @@
                                 <input type="text" id="n8nWebhook" placeholder="Sua URL do Webhook"
                                     value="https://n8n.naturaisterravida.com.br/webhook/conexao-limpa-v1">
                             </div>
-                            <div class="form-group">
-                                <label>Sua Instância Evolution</label>
-                                <div style="display: flex; gap: 10px;">
-                                    <input type="text" id="instanceName" placeholder="Ex: minha_loja_01" value=""
-                                        style="background: rgba(255, 255, 255, 0.05);">
-                                    <button class="btn-primary" onclick="startQRConnection()"
-                                        style="padding: 10px; font-size: 12px; flex: none; width: auto;">CONECTAR</button>
+                            <div id="connectionPanel"
+                                style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); text-align: center;">
+                                <div id="statusBadge"
+                                    style="display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 15px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">
+                                    🔴 NÃO CONECTADO
                                 </div>
+                                <h3 id="instanceDisplay" style="font-size: 14px; margin-bottom: 15px; display: none;">
+                                    Sessão: <span style="color: var(--primary);">---</span></h3>
+                                <button id="btnConnect" class="btn-primary" onclick="startQRConnection()"
+                                    style="width: 100%;">
+                                    📲 CONECTAR WHATSAPP
+                                </button>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">Clique acima
+                                    para gerar o QR Code e parear seu aparelho.</p>
+                                <input type="hidden" id="instanceName" value="">
                             </div>
                         </div>
                     </div>
@@ -891,8 +898,37 @@
 
             if (savedWebhook) document.getElementById('n8nWebhook').value = savedWebhook;
             if (savedKey) document.getElementById('apiKey').value = savedKey;
-            if (savedInstance) document.getElementById('instanceName').value = savedInstance;
+
+            if (savedInstance) {
+                document.getElementById('instanceName').value = savedInstance;
+                updateConnectionUI(savedInstance);
+                checkInstanceStatus(savedInstance);
+            }
         });
+
+        function updateConnectionUI(instance) {
+            document.getElementById('instanceDisplay').style.display = 'block';
+            document.getElementById('instanceDisplay').querySelector('span').textContent = instance;
+            document.getElementById('btnConnect').textContent = "🔄 RECONECTAR / TROCAR";
+        }
+
+        async function checkInstanceStatus(instance) {
+            const apiKey = document.getElementById('apiKey').value || 'f98fed17beccac0149db6cfe6bfb7fff';
+            try {
+                const res = await fetch(`${EVOLUTION_URL}/instance/connectionState/${instance}`, {
+                    headers: { 'apikey': apiKey }
+                });
+                const data = await res.json();
+                const badge = document.getElementById('statusBadge');
+
+                if (data.instance && data.instance.state === "open") {
+                    badge.innerHTML = "🟢 WHATSAPP CONECTADO";
+                    badge.style.background = "rgba(37, 211, 102, 0.1)";
+                    badge.style.color = "var(--primary)";
+                    badge.style.borderColor = "rgba(37, 211, 102, 0.2)";
+                }
+            } catch (e) { console.log("Erro status:", e); }
+        }
 
         function saveConfig() {
             localStorage.setItem('mg_webhook', document.getElementById('n8nWebhook').value);
@@ -1150,10 +1186,16 @@
         const EVOLUTION_URL = 'https://evolution.naturaisterravida.com.br';
 
         async function startQRConnection() {
-            const instance = document.getElementById('instanceName').value;
+            let instance = document.getElementById('instanceName').value;
             const apiKey = document.getElementById('apiKey').value;
 
-            if (!instance) return showToast("Digite o nome da instância primeiro.", "error");
+            // Se não tiver instância, gera uma aleatória automática
+            if (!instance) {
+                instance = 'mg_' + Math.random().toString(36).substring(2, 9);
+                document.getElementById('instanceName').value = instance;
+                saveConfig();
+            }
+
             if (!apiKey) return showToast("Chave API master não configurada.", "error");
 
             document.getElementById('qrModal').style.display = 'flex';
@@ -1212,6 +1254,8 @@
                         document.getElementById('connectionStatus').textContent = "✅ CONECTADO!";
                         document.getElementById('connectionStatus').style.color = "var(--primary)";
                         showToast("WhatsApp pareado com sucesso!");
+                        updateConnectionUI(instance);
+                        checkInstanceStatus(instance);
                         setTimeout(closeQRModal, 2000);
                     }
                 } catch (e) {
