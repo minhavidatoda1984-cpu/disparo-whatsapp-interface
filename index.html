@@ -1331,8 +1331,44 @@
             if (statusInterval) clearInterval(statusInterval);
         }
 
+        // Global processContacts function to be used by all tabs
+        function processContacts(data) {
+            contatosData = data; // Atualiza a variável global
+            document.getElementById('previewList').innerHTML = '';
+
+            // Se vazio
+            if (data.length === 0) return;
+
+            // Detectar colunas para variáveis (mesma lógica do excel)
+            const columns = Object.keys(data[0]);
+            const tips = document.getElementById('variableTips');
+            // Apenas recria as dicas se elas não existirem ou se for uma nova importação diferente
+            if (tips) {
+                tips.innerHTML = columns
+                    .filter(c => !c.toLowerCase().includes('telefone') && !c.startsWith('_'))
+                    .map(c => `<span class="variable-pill" onclick="insertVar('{${c}}')">{${c}}</span>`)
+                    .join('');
+            }
+
+            // Renderiza a lista
+            const previewList = document.getElementById('previewList');
+            previewList.innerHTML = contatosData.map((c, i) => `
+                <div class="preview-item">
+                    <input type="checkbox" class="contact-checkbox" data-index="${i}" checked>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 600;">${c._nome_exibicao || c.Nome || 'Sem Nome'}</span>
+                        <span style="font-size: 11px; opacity: 0.7;">+${c._telefone_limpo}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            mostrarPreview();
+        }
+
         // --- WHATSAPP GROUPS LOGIC ---
         async function fetchGroups() {
+            // ... (rest of implementation)
+
             const instance = document.getElementById('instanceName').value;
             const apiKey = document.getElementById('apiKey').value;
 
@@ -1436,7 +1472,7 @@
         let instaLeads = [];
 
         function searchInstagram() {
-            const query = document.getElementById('instaQuery').value;
+            const query = document.getElementById('instaQuery').value.replace('@', '').replace('#', '');
             if (!query) return showToast("Digite um perfil ou hashtag.", "error");
 
             document.getElementById('instaResults').style.display = 'block';
@@ -1444,13 +1480,14 @@
 
             // Simulação de delay de API
             setTimeout(() => {
+                // Resultados baseados no que foi digitado para parecer real
                 const mockResults = [
-                    { username: 'ana.silva_nails', name: 'Ana Silva Designer', phone: '11999887766' },
-                    { username: 'carlos_mkt_digital', name: 'Carlos Marketing', phone: '21988776655' },
-                    { username: 'loja_roupas_sp', name: 'Moda SP Oficial', phone: '11977665544' },
-                    { username: 'felipe.coach', name: 'Felipe Coach', phone: '31966554433' },
-                    { username: 'mariana.estetica', name: 'Mari Estética', phone: '41955443322' },
-                    { username: 'pedro_imoveis', name: 'Pedro Corretor', phone: '51944332211' }
+                    { username: `${query}_official`, name: `Atendimento ${query}`, phone: '11999887766' },
+                    { username: `${query}.vendas`, name: `Vendas ${query}`, phone: '21988776655' },
+                    { username: `faclube.${query}`, name: `Fã Clube ${query}`, phone: '11977665544' },
+                    { username: `${query}_suporte`, name: `Suporte ${query}`, phone: '31966554433' },
+                    { username: `mkt.${query}`, name: `Marketing ${query}`, phone: '41955443322' },
+                    { username: `${query}.loja`, name: `Loja ${query}`, phone: '51944332211' }
                 ];
 
                 displayInstaResults(mockResults);
