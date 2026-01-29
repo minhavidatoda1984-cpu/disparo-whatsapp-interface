@@ -877,6 +877,8 @@
                     <div class="button-group" style="margin-top: 20px;">
                         <button class="btn-primary" onclick="importLeadsToSender()" id="btnImportLeads" disabled>📥
                             IMPORTAR SELECIONADOS PARA O DISPARO</button>
+                        <button class="btn-accent" onclick="exportToExcel(mapsLeads, 'leads_google_maps')">📊 EXPORTAR
+                            EXCEL</button>
                     </div>
                 </div>
             </div>
@@ -929,6 +931,8 @@
 
                     <div class="button-group" style="margin-top: 20px;">
                         <button class="btn-accent" onclick="importInstaLeads()">⬇ IMPORTAR SELECIONADOS</button>
+                        <button class="btn-accent" onclick="exportToExcel(instaLeads, 'leads_instagram')">📊 EXPORTAR
+                            EXCEL</button>
                     </div>
                 </div>
             </div>
@@ -1418,6 +1422,13 @@
                 `;
                 list.appendChild(div);
             });
+
+            // Opção para exportar TODOS os grupos
+            const exportBtn = document.createElement('div');
+            exportBtn.className = 'button-group';
+            exportBtn.style.marginTop = '20px';
+            exportBtn.innerHTML = `<button class="btn-accent" onclick="exportToExcel(groups.map(g => ({name: g.subject, phone: g.id.split('@')[0]})), 'meus_grupos_whatsapp')">📊 EXPORTAR LISTA DE GRUPOS</button>`;
+            list.appendChild(exportBtn);
         }
 
         async function extractGroupParticipants(groupJid, groupName) {
@@ -1651,6 +1662,24 @@
             mostrarPreview();
             switchTab('sender');
             showToast(`${imported.length} leads importados para o disparo!`);
+        }
+
+        // --- EXPORT FUNCTION ---
+        function exportToExcel(data, filename) {
+            if (!data || data.length === 0) return showToast("Nenhum dado para exportar.", "error");
+
+            // Formata dados para excel limpo
+            const cleanData = data.map(item => ({
+                Nome: item.name || item.nome || item.username,
+                Telefone: item.phone || item.telefone || item.id,
+                Origem: filename
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(cleanData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Leads");
+            XLSX.writeFile(wb, `${filename}_${new Date().getTime()}.xlsx`);
+            showToast("Download iniciado!");
         }
     </script>
     <script async
