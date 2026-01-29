@@ -687,8 +687,6 @@
             <button id="btn-tab-sender" class="tab-btn active" onclick="switchTab('sender')">🔥 DISPARO EM
                 MASSA</button>
             <button id="btn-tab-maps" class="tab-btn" onclick="switchTab('maps')">📍 EXTRAÇÃO MAPS</button>
-            <button id="btn-tab-groups" class="tab-btn" onclick="switchTab('groups')">👥 EXTRAÇÃO GRUPOS</button>
-            <button id="btn-tab-insta" class="tab-btn" onclick="switchTab('insta')">📸 EXTRAÇÃO INSTA</button>
         </div>
 
         <!-- Tab 1: MG Sender -->
@@ -800,194 +798,116 @@
                             </div>
                         </div>
 
-                        <div style="margin-top: 20px;">
-                            <label>Anexar Mídia (Imagem/PDF/Vídeo)</label>
-                            <div class="file-upload-wrapper" style="padding: 10px;">
-                                <input type="file" id="mediaFile"
-                                    accept="image/*,application/pdf,video/*,audio/mpeg,audio/ogg">
-                                <span id="mediaNameDisplay" style="font-size: 12px; color: var(--text-muted);">Clique
-                                    para
-                                    anexar arquivo</span>
+                        <div class="form-group">
+                            <label>Delay entre mensagens (segndos)</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="number" id="msgDelay" value="30" min="5"
+                                    style="width: 100%; padding: 12px 14px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 12px; font-size: 14px; color: white;">
                             </div>
-                            <label style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="isAudio" style="width: auto;">
-                                <span style="font-size: 12px;">Enviar como Áudio Gravado (apenas .mp3/.ogg)</span>
-                            </label>
+                            <span style="font-size: 11px; color: var(--text-muted);">Recomendado: 30s para evitar
+                                bloqueios. O sistema aguardará este tempo após cada mensagem.</span>
                         </div>
-                    </div>
 
-                    <div class="config-section" style="margin-top: 20px;">
-                        <h2>⏰ Agendamento</h2>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <input type="date" id="scheduleDate">
-                            <input type="time" id="scheduleTime">
-                        </div>
                         <div class="form-group" style="margin-top: 15px;">
-                            <label>Delay entre Texto e Mídia (segundos)</label>
-                            <input type="number" id="msgDelay" value="3" min="0" max="60"
-                                style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; border-radius: 8px;">
+                            <label>Anexar Mídia (Opcional)</label>
+                            <div class="file-upload-wrapper" style="padding: 15px;">
+                                <input type="file" id="mediaFile" accept="image/*,video/*,application/pdf,audio/*">
+                                <div class="file-upload-info">
+                                    <div class="icon-plus" style="font-size: 18px;">📎</div>
+                                    <span id="mediaNameDisplay">Foto, Vídeo, PDF ou Áudio</span>
+                                </div>
+                            </div>
+                            <div id="mediaPreview" style="margin-top: 10px;"></div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="progress-container" id="progressContainer">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px;">
-                        <span id="progressStatus">Enviando...</span>
-                        <span id="progressPercent">0%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                </div>
+                        <div class="button-group" style="margin-top: 25px;">
+                            <button class="btn-primary" id="btnDisparar" onclick="iniciarDisparo()">
+                                🚀 INICIAR DISPARO
+                            </button>
+                        </div>
 
-                <div class="button-group">
-                    <button class="btn-danger" style="flex: 0.3;" onclick="limparFormulario()">LIMPAR</button>
-                    <button class="btn-accent" id="btnSchedule" onclick="agendarDisparo()">AGENDAR DISPARO</button>
-                    <button class="btn-primary" id="btnSend" onclick="iniciarDisparo()">🔥 DISPARO IMEDIATO</button>
+                        <div class="progress-container" id="progressContainer">
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                                <span id="progressStatus">Enviando...</span>
+                                <span id="progressPercent">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tab 2: Google Maps Leads -->
+        <!-- Tab 2: Extração Maps -->
         <div id="tab-maps" class="tab-pane">
-            <div class="content" style="grid-template-columns: 1fr;">
-                <div class="config-section">
-                    <h2>📍 Extração de Leads Google Maps</h2>
-                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <div style="flex: 1;">
-                            <label>O que você procura? (Ex: Dentistas em São Paulo)</label>
-                            <input type="text" id="mapsQuery" placeholder="Ex: Pet Shops em Curitiba">
-                        </div>
-                        <div style="align-self: flex-end; margin-bottom: 18px;">
-                            <button class="btn-primary" onclick="searchMaps()" id="btnMapsSearch">🔍 BUSCAR
-                                LEADS</button>
-                        </div>
-                    </div>
-
-                    <div id="mapsResultsCount" style="font-size: 13px; color: var(--primary); display: none;">
-                        Encontrados: <strong id="totalMapsLeads">0</strong> leads
-                    </div>
-
-                    <div class="maps-results" id="mapsResultsList">
-                        <div style="padding: 40px; text-align: center; color: var(--text-muted);">
-                            Faça uma busca para carregar leads do Google Maps
-                        </div>
-                    </div>
-
-                    <div class="button-group" style="margin-top: 20px;">
-                        <button class="btn-primary" onclick="importLeadsToSender()" id="btnImportLeads" disabled>📥
-                            IMPORTAR SELECIONADOS PARA O DISPARO</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab 3: Extração Grupos WhatsApp -->
-        <div id="tab-groups" class="tab-pane">
             <div class="content">
                 <div class="config-section" style="grid-column: span 2;">
-                    <h2>👥 Meus Grupos do WhatsApp</h2>
+                    <h2>📍 Extração de Leads (Google Maps)</h2>
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
-                        Carregue os grupos onde você está e extraia todos os participantes.
-                    </p>
-
-                    <button class="btn-primary" onclick="fetchGroups()" style="width: auto; margin-bottom: 20px;">
-                        🔄 CARREGAR MEUS GRUPOS
-                    </button>
-
-                    <div id="groupsList" class="maps-results" style="display: none; max-height: 500px;">
-                        <!-- Lista de Grupos -->
-                    </div>
-
-                    <div id="groupLoading"
-                        style="display: none; text-align: center; padding: 20px; color: var(--primary);">
-                        ⏳ Extraindo contatos do grupo... Aguarde...
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab 4: Extração Instagram -->
-        <div id="tab-insta" class="tab-pane">
-            <div class="content">
-                <div class="config-section" style="grid-column: span 2;">
-                    <h2>📸 Extração de Seguidores (Instagram)</h2>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
-                        Busque seguidores de perfis concorrentes ou hashtags. (Simulação)
+                        Busque empresas locais e adicione diretamente à sua lista de disparo.
                     </p>
 
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <input type="text" id="instaQuery" placeholder="Ex: @concorrente ou #marketing"
-                            style="flex: 1;">
-                        <button class="btn-primary" onclick="searchInstagram()" style="flex: none; width: auto;">🔍
-                            BUSCAR PERFIS</button>
+                        <input type="text" id="mapsQuery" placeholder="Ex: Dentistas em São Paulo, SP" style="flex: 1;">
+                        <button class="btn-primary" onclick="searchMaps()" style="flex: none; width: auto;">🔍
+                            BUSCAR</button>
                     </div>
 
-                    <div id="instaResults" class="maps-results" style="display: none;">
-                        <!-- Resultados Insta -->
+                    <div id="mapsResults" class="maps-results" style="display: none;">
+                        <!-- Resultados aqui -->
                     </div>
 
                     <div class="button-group" style="margin-top: 20px;">
-                        <button class="btn-accent" onclick="importInstaLeads()">⬇ IMPORTAR SELECIONADOS</button>
+                        <button class="btn-accent" onclick="importMapsLeads()">⬇ IMPORTAR SELECIONADOS</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="status-toast" id="statusToast"></div>
+    <div id="statusToast" class="status-toast"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
     <script>
+        // CONFIGURAÇÕES
         let contatosData = [];
         let base64Media = null;
-        let mediaFileName = null;
         let mediaMimeType = null;
+        let mediaFileName = null;
+        let isAudio = false;
 
-        // Carregar configurações salvas
-        window.addEventListener('load', () => {
-            const savedWebhook = localStorage.getItem('mg_webhook');
-            const savedKey = localStorage.getItem('mg_apikey');
-            const savedInstance = localStorage.getItem('mg_instance');
+        // Tabs Logic
+        function switchTab(tabName) {
+            // Remove active class from all
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-            if (savedWebhook) document.getElementById('n8nWebhook').value = savedWebhook;
-            if (savedKey) document.getElementById('apiKey').value = savedKey;
-
-            if (savedInstance) {
-                document.getElementById('instanceName').value = savedInstance;
-                updateConnectionUI(savedInstance);
-                checkInstanceStatus(savedInstance);
-            }
-        });
-
-        function updateConnectionUI(instance) {
-            document.getElementById('instanceDisplay').style.display = 'block';
-            document.getElementById('instanceDisplay').querySelector('span').textContent = instance;
-            document.getElementById('btnConnect').textContent = "🔄 RECONECTAR / TROCAR";
+            // Add active class
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById(`btn-tab-${tabName}`).classList.add('active');
         }
 
-        async function checkInstanceStatus(instance) {
-            const apiKey = document.getElementById('apiKey').value || 'f98fed17beccac0149db6cfe6bfb7fff';
-            try {
-                const res = await fetch(`${EVOLUTION_URL}/instance/connectionState/${instance}`, {
-                    headers: { 'apikey': apiKey }
-                });
-                const data = await res.json();
-                const badge = document.getElementById('statusBadge');
+        // UI Helpers
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('statusToast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            toast.style.borderColor = type === 'error' ? '#ef4444' : 'var(--glass-border)';
+            toast.style.color = type === 'error' ? '#ef4444' : 'white';
 
-                if (data.instance && data.instance.state === "open") {
-                    badge.innerHTML = "🟢 WHATSAPP CONECTADO";
-                    badge.style.background = "rgba(37, 211, 102, 0.1)";
-                    badge.style.color = "var(--primary)";
-                    badge.style.borderColor = "rgba(37, 211, 102, 0.2)";
-                }
-            } catch (e) { console.log("Erro status:", e); }
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
         }
 
-        function saveConfig() {
-            localStorage.setItem('mg_webhook', document.getElementById('n8nWebhook').value);
-            localStorage.setItem('mg_apikey', document.getElementById('apiKey').value);
-            localStorage.setItem('mg_instance', document.getElementById('instanceName').value);
+        function toggleSelectAll() {
+            const isChecked = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.contact-check').forEach(cb => cb.checked = isChecked);
         }
 
         // Lógica de Login
@@ -1022,151 +942,142 @@
 
         function insertVar(v) {
             const area = document.getElementById('message');
-            area.value += v;
-            area.focus();
+            area.value += " " + v;
         }
 
-        // Validação e Limpeza de Telefone
-        function limparTelefone(tel) {
-            if (!tel) return "";
-            // Remove tudo que não é número
-            let clean = String(tel).replace(/\D/g, "");
-
-            // Se o número não começar com 55 e tiver 10 ou 11 dígitos, adiciona 55
-            if (clean.length >= 10 && clean.length <= 11 && !clean.startsWith("55")) {
-                clean = "55" + clean;
-            }
-
-            return clean;
-        }
-
-        // Processar Excel com Multi-Variáveis
+        // File Upload Excel
         document.getElementById('excelFile').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
+
             document.getElementById('fileNameDisplay').textContent = file.name;
-
             const reader = new FileReader();
+
             reader.onload = function (e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
-                    if (jsonData.length > 0) {
-                        // Detectar colunas para variáveis
-                        const columns = Object.keys(jsonData[0]);
-                        const tips = document.getElementById('variableTips');
-                        tips.innerHTML = columns
-                            .filter(c => !c.toLowerCase().includes('telefone'))
-                            .map(c => `<span class="variable-pill" onclick="insertVar('{${c}}')">{${c}}</span>`)
-                            .join('');
-
-                        contatosData = jsonData.map(row => {
-                            // Encontrar coluna de telefone de forma inteligente
-                            const telKey = columns.find(c => {
-                                const lower = c.toLowerCase();
-                                return lower.includes('tel') || lower.includes('cel') || lower.includes('fone') || lower.includes('whats') || lower.includes('number');
-                            }) || columns[0];
-
-                            // Encontrar coluna de nome de forma inteligente
-                            const nomeKey = columns.find(c => {
-                                const lower = c.toLowerCase();
-                                return lower.includes('nome') || lower.includes('name') || lower.includes('lead') || lower.includes('cliente') || lower.includes('contato');
-                            });
-
-                            const phone = limparTelefone(row[telKey]);
-                            const nomeEncontrado = nomeKey ? row[nomeKey] : null;
-
-                            return { ...row, _telefone_limpo: phone, _nome_exibicao: nomeEncontrado };
-                        }).filter(c => c._telefone_limpo);
-
-                        mostrarPreview();
-                        showToast(`Sucesso: ${contatosData.length} contatos carregados.`);
-                    }
-                } catch (error) {
-                    showToast('Erro ao processar Excel: ' + error.message, 'error');
-                }
+                processContacts(jsonData);
             };
             reader.readAsArrayBuffer(file);
         });
 
-        // Conversão de Mídia para Base64
-        document.getElementById('mediaFile').addEventListener('change', async function (e) {
-            const file = e.target.files[0];
-            if (!file) {
-                base64Media = null;
+        function processContacts(data) {
+            contatosData = [];
+            document.getElementById('previewList').innerHTML = '';
+
+            // Detectar colunas
+            if (data.length === 0) return;
+            const keys = Object.keys(data[0]);
+
+            // Tenta achar telefone e nome de forma inteligente
+            let phoneKey = keys.find(k => k.toLowerCase().includes('tele') || k.toLowerCase().includes('cel') || k.toLowerCase().includes('phone') || k.toLowerCase().includes('whatsapp'));
+            let nameKey = keys.find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('name') || k.toLowerCase().includes('cliente') || k.toLowerCase().includes('lead') || k.toLowerCase().includes('contato'));
+
+            if (!phoneKey) {
+                alert("Não encontrei uma coluna de Telefone. Certifique-se que o Excel tem cabeçalho.");
                 return;
             }
+
+            // Popula variáveis sugeridas e lista
+            const tips = document.getElementById('variableTips');
+            tips.innerHTML = '';
+            keys.forEach(k => {
+                tips.innerHTML += `<span class="variable-pill" onclick="insertVar('{${k}}')">{${k}}</span>`;
+            });
+
+            data.forEach((row, index) => {
+                let phone = String(row[phoneKey]).replace(/\D/g, '');
+                // Basic BR validation
+                if (phone.length < 10) return;
+                if (phone.length === 10 || phone.length === 11) phone = "55" + phone;
+
+                // Adiciona chave limpa
+                row['_telefone_limpo'] = phone;
+
+                const displayName = nameKey ? row[nameKey] : phone;
+
+                contatosData.push(row);
+
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                div.innerHTML = `
+                    <input type="checkbox" class="contact-check" value="${index}" checked>
+                    <div>
+                        <strong>${displayName}</strong><br>
+                        <span style="color:var(--text-muted); font-size:11px;">${phone}</span>
+                    </div>
+                `;
+                document.getElementById('previewList').appendChild(div);
+            });
+
+            document.getElementById('totalContacts').textContent = contatosData.length;
+            document.getElementById('previewSection').style.display = 'block';
+        }
+
+
+        // Media Upload
+        document.getElementById('mediaFile').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
             document.getElementById('mediaNameDisplay').textContent = file.name;
             mediaFileName = file.name;
             mediaMimeType = file.type;
+            isAudio = file.type.startsWith('audio');
 
             const reader = new FileReader();
             reader.onload = function (e) {
-                const fullBase64 = e.target.result;
-                base64Media = fullBase64.split(',')[1];
+                base64Media = e.target.result.split(',')[1];
+                document.getElementById('mediaPreview').innerHTML = `
+                    <div class="media-preview-item">
+                        <span>${isAudio ? '🎵' : '📎'} ${file.name}</span>
+                        <span class="remove-media" onclick="removeMedia()">✕</span>
+                    </div>
+                `;
             };
             reader.readAsDataURL(file);
         });
 
-        function mostrarPreview() {
-            if (contatosData.length === 0) return;
-            const previewSection = document.getElementById('previewSection');
-            previewSection.style.display = 'block';
-            document.getElementById('totalContacts').textContent = contatosData.length;
-
-            const previewList = document.getElementById('previewList');
-            previewList.innerHTML = contatosData.map((c, i) => `
-                <div class="preview-item">
-                    <input type="checkbox" class="contact-checkbox" data-index="${i}" checked>
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-weight: 600;">${c._nome_exibicao || 'Sem Nome'}</span>
-                        <span style="font-size: 11px; opacity: 0.7;">+${c._telefone_limpo}</span>
-                    </div>
-                </div>
-            `).join('');
+        function removeMedia() {
+            document.getElementById('mediaFile').value = '';
+            base64Media = null;
+            mediaMimeType = null;
+            mediaFileName = null;
+            document.getElementById('mediaNameDisplay').textContent = 'Foto, Vídeo, PDF ou Áudio';
+            document.getElementById('mediaPreview').innerHTML = '';
         }
 
-        function toggleSelectAll() {
-            const state = document.getElementById('selectAll').checked;
-            document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = state);
-        }
-
-        function showToast(msg, type = 'success') {
-            const toast = document.getElementById('statusToast');
-            toast.textContent = msg;
-            toast.style.borderColor = type === 'success' ? 'var(--primary)' : '#ef4444';
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 4000);
-        }
-
+        // Disparo
         async function iniciarDisparo() {
-            const webhookUrl = document.getElementById('n8nWebhook').value.trim();
-            const msgTemplate = document.getElementById('message').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const instanceName = document.getElementById('instanceName').value.trim();
-            const msgDelay = document.getElementById('msgDelay').value || 3;
-            const selectedBoxes = Array.from(document.querySelectorAll('.contact-checkbox:checked'));
-            const isAudio = document.getElementById('isAudio').checked;
+            const btn = document.getElementById('btnDisparar');
+            const checks = document.querySelectorAll('.contact-check:checked');
 
-            if (!webhookUrl || !msgTemplate || selectedBoxes.length === 0) {
-                showToast('Preencha os campos obrigatórios e selecione contatos.', 'error');
+            if (checks.length === 0) {
+                showToast("Selecione pelo menos um contato.", "error");
                 return;
             }
 
-            saveConfig(); // Salva as chaves antes de enviar
+            const instanceName = document.getElementById('instanceName').value;
+            const webhookUrl = document.getElementById('n8nWebhook').value;
+            const apiKey = document.getElementById('apiKey').value;
+            const msgTemplate = document.getElementById('message').value;
+            const msgDelay = parseInt(document.getElementById('msgDelay').value) || 5;
 
-            const btn = document.getElementById('btnSend');
+            if (!instanceName) return showToast("Defina sua Instância.", "error");
+            if (!webhookUrl) return showToast("Configure o Webhook.", "error");
+            if (!msgTemplate && !base64Media) return showToast("Escreva uma mensagem ou anexe mídia.", "error");
+
             btn.disabled = true;
             document.getElementById('progressContainer').style.display = 'block';
 
-            const total = selectedBoxes.length;
             let count = 0;
+            const total = checks.length;
 
-            for (const box of selectedBoxes) {
-                const index = box.dataset.index;
+            for (const check of checks) {
+                const index = check.value;
                 const contato = contatosData[index];
 
                 let mensagemFinal = msgTemplate;
@@ -1233,6 +1144,52 @@
                     iniciarDisparo();
                 }
             }, 30000);
+        }
+
+        // Carregar configurações salvas
+        window.addEventListener('load', () => {
+            const savedWebhook = localStorage.getItem('mg_webhook');
+            const savedKey = localStorage.getItem('mg_apikey');
+            const savedInstance = localStorage.getItem('mg_instance');
+
+            if (savedWebhook) document.getElementById('n8nWebhook').value = savedWebhook;
+            if (savedKey) document.getElementById('apiKey').value = savedKey;
+
+            if (savedInstance) {
+                document.getElementById('instanceName').value = savedInstance;
+                updateConnectionUI(savedInstance);
+                checkInstanceStatus(savedInstance);
+            }
+        });
+
+        function updateConnectionUI(instance) {
+            document.getElementById('instanceDisplay').style.display = 'block';
+            document.getElementById('instanceDisplay').querySelector('span').textContent = instance;
+            document.getElementById('btnConnect').textContent = "🔄 RECONECTAR / TROCAR";
+        }
+
+        async function checkInstanceStatus(instance) {
+            const apiKey = document.getElementById('apiKey').value || 'f98fed17beccac0149db6cfe6bfb7fff';
+            try {
+                const res = await fetch(`${EVOLUTION_URL}/instance/connectionState/${instance}`, {
+                    headers: { 'apikey': apiKey }
+                });
+                const data = await res.json();
+                const badge = document.getElementById('statusBadge');
+
+                if (data.instance && data.instance.state === "open") {
+                    badge.innerHTML = "🟢 WHATSAPP CONECTADO";
+                    badge.style.background = "rgba(37, 211, 102, 0.1)";
+                    badge.style.color = "var(--primary)";
+                    badge.style.borderColor = "rgba(37, 211, 102, 0.2)";
+                }
+            } catch (e) { console.log("Erro status:", e); }
+        }
+
+        function saveConfig() {
+            localStorage.setItem('mg_webhook', document.getElementById('n8nWebhook').value);
+            localStorage.setItem('mg_apikey', document.getElementById('apiKey').value);
+            localStorage.setItem('mg_instance', document.getElementById('instanceName').value);
         }
 
         // --- QR CODE & CONNECTION LOGIC ---
@@ -1331,166 +1288,96 @@
             if (statusInterval) clearInterval(statusInterval);
         }
 
-        // --- WHATSAPP GROUPS LOGIC ---
-        async function fetchGroups() {
-            const instance = document.getElementById('instanceName').value;
-            const apiKey = document.getElementById('apiKey').value;
+        // --- GOOGLE MAPS LOGIC ---
+        let mapsLeads = [];
+        let placesService;
 
-            if (!instance || !apiKey) return showToast("Conecte seu WhatsApp primeiro na aba de Disparo.", "error");
+        async function initMap() {
+            // Inicializa o serviço do Places (sem mapa visual, apenas serviço)
+            // Hack: cria um elemento invisível para o mapa
+            const mapDiv = document.createElement('div');
+            const map = new google.maps.Map(mapDiv, { center: { lat: -23.55, lng: -46.63 }, zoom: 10 });
+            placesService = new google.maps.places.PlacesService(map);
+        }
 
-            document.getElementById('groupsList').style.display = 'block';
-            document.getElementById('groupsList').innerHTML = '<div style="padding:20px; text-align:center;">⏳ Buscando grupos...</div>';
+        function searchMaps() {
+            const query = document.getElementById('mapsQuery').value;
+            if (!query) return showToast("Digite uma busca (ex: Pizzaria em SP)", "error");
 
-            try {
-                const res = await fetch(`${EVOLUTION_URL}/group/fetchAllGroups/${instance}?getParticipants=false`, {
-                    headers: { 'apikey': apiKey }
-                });
-                const data = await res.json();
+            document.getElementById('mapsResults').style.display = 'block';
+            document.getElementById('mapsResults').innerHTML = '<div style="padding:20px; text-align:center;">🔍 Buscando no Google...</div>';
 
-                if (Array.isArray(data)) {
-                    renderGroups(data);
+            const request = {
+                query: query,
+                fields: ['name', 'formatted_address', 'place_id', 'geometry']
+            };
+
+            placesService.textSearch(request, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                    displayMapsResults(results);
                 } else {
-                    document.getElementById('groupsList').innerHTML = '<div style="padding:20px; text-align:center;">❌ Nenhum grupo encontrado ou erro na API.</div>';
+                    document.getElementById('mapsResults').innerHTML = '<div style="padding:20px; text-align:center;">❌ Nenhum resultado encontrado.</div>';
                 }
-            } catch (e) {
-                console.error(e);
-                document.getElementById('groupsList').innerHTML = `<div style="padding:20px; text-align:center;">❌ Erro: ${e.message}</div>`;
-            }
-        }
-
-        function renderGroups(groups) {
-            const list = document.getElementById('groupsList');
-            list.innerHTML = '';
-
-            if (groups.length === 0) {
-                list.innerHTML = '<div style="padding:20px; text-align:center;">Você não participa de nenhum grupo.</div>';
-                return;
-            }
-
-            groups.forEach(g => {
-                const div = document.createElement('div');
-                div.className = 'maps-item';
-                div.innerHTML = `
-                    <div class="maps-info">
-                        <h4>${g.subject}</h4>
-                        <p>ID: ${g.id}</p>
-                        <p style="color: var(--primary);">${g.participants ? g.participants.length + ' membros' : 'Clique para ver membros'}</p>
-                    </div>
-                    <button class="btn-accent" style="width: auto; font-size: 11px; padding: 8px;" onclick="extractGroupParticipants('${g.id}', '${g.subject}')">
-                        ⬇ EXTRAIR MEMBROS
-                    </button>
-                `;
-                list.appendChild(div);
             });
         }
 
-        async function extractGroupParticipants(groupJid, groupName) {
-            const instance = document.getElementById('instanceName').value;
-            const apiKey = document.getElementById('apiKey').value;
-
-            document.getElementById('groupLoading').style.display = 'block';
-            showToast(`Extraindo membros de: ${groupName}... aguarde.`);
-
-            try {
-                // Fetch participants detalhado
-                const res = await fetch(`${EVOLUTION_URL}/group/participants/${instance}?groupJid=${groupJid}`, {
-                    headers: { 'apikey': apiKey }
-                });
-                const data = await res.json();
-
-                // A estrutura de retorno pode variar, geralmente é data.participants ou o próprio array
-                const participants = data.participants || data;
-
-                if (participants && Array.isArray(participants)) {
-                    let count = 0;
-                    participants.forEach(p => {
-                        const num = p.id.split('@')[0];
-                        // Evitar adicionar o próprio número ou números inválidos
-                        if (num.length > 5 && !p.admin) { // Opcional: filtrar admins se quiser
-                            contatosData.push({
-                                'Nome': `Membro ${groupName}`,
-                                'Telefone': num,
-                                '_telefone_limpo': "55" + num.replace(/^55/, '') // Garante 55
-                            });
-                            count++;
-                        }
-                    });
-
-                    if (count > 0) {
-                        switchTab('sender');
-                        processContacts(contatosData);
-                        showToast(`Sucesso! ${count} membros de "${groupName}" adicionados.`);
-                    } else {
-                        showToast("Nenhum membro válido encontrado neste grupo.", "error");
-                    }
-                }
-            } catch (e) {
-                console.error(e);
-                showToast("Erro ao extrair participantes: " + e.message, "error");
-            } finally {
-                document.getElementById('groupLoading').style.display = 'none';
-            }
-        }
-
-        // --- INSTAGRAM LOGIC (SIMULATION) ---
-        let instaLeads = [];
-
-        function searchInstagram() {
-            const query = document.getElementById('instaQuery').value;
-            if (!query) return showToast("Digite um perfil ou hashtag.", "error");
-
-            document.getElementById('instaResults').style.display = 'block';
-            document.getElementById('instaResults').innerHTML = '<div style="padding:20px; text-align:center;">🔍 Analisando perfil e seguidores...</div>';
-
-            // Simulação de delay de API
-            setTimeout(() => {
-                const mockResults = [
-                    { username: 'ana.silva_nails', name: 'Ana Silva Designer', phone: '11999887766' },
-                    { username: 'carlos_mkt_digital', name: 'Carlos Marketing', phone: '21988776655' },
-                    { username: 'loja_roupas_sp', name: 'Moda SP Oficial', phone: '11977665544' },
-                    { username: 'felipe.coach', name: 'Felipe Coach', phone: '31966554433' },
-                    { username: 'mariana.estetica', name: 'Mari Estética', phone: '41955443322' },
-                    { username: 'pedro_imoveis', name: 'Pedro Corretor', phone: '51944332211' }
-                ];
-
-                displayInstaResults(mockResults);
-            }, 2000);
-        }
-
-        function displayInstaResults(results) {
-            const container = document.getElementById('instaResults');
+        function displayMapsResults(results) {
+            const container = document.getElementById('mapsResults');
             container.innerHTML = '';
-            instaLeads = [];
+            mapsLeads = [];
 
-            results.forEach((user, index) => {
-                instaLeads[index] = user;
-
+            results.forEach((place, index) => {
+                // Para cada lugar, precisamos buscar os detalhes (telefone)
                 const div = document.createElement('div');
                 div.className = 'maps-item';
+                div.id = `map-item-${index}`;
                 div.innerHTML = `
-                    <div class="maps-info" style="display:flex; align-items:center; gap:10px;">
-                        <div style="width:40px; height:40px; background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border-radius:50%;"></div>
-                        <div>
-                            <h4>@${user.username}</h4>
-                            <p>${user.name}</p>
-                            <p style="color: var(--primary);">📞 ${user.phone}</p>
-                        </div>
-                    </div>
-                    <input type="checkbox" id="check-insta-${index}" checked>
-                `;
+            <div class="maps-info">
+                <h4>${place.name}</h4>
+                <p>📍 ${place.formatted_address}</p>
+                <p id="phone-p-${index}" style="color: var(--primary);">⏳ Buscando telefone...</p>
+            </div>
+            <input type="checkbox" id="check-map-${index}" disabled>
+        `;
                 container.appendChild(div);
+
+                // Busca detalhes
+                placesService.getDetails({
+                    placeId: place.place_id,
+                    fields: ['name', 'formatted_phone_number', 'international_phone_number']
+                }, (placeDetails, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK && placeDetails.formatted_phone_number) {
+                        const phone = placeDetails.international_phone_number || placeDetails.formatted_phone_number;
+                        const cleanPhone = phone.replace(/\D/g, '');
+
+                        document.getElementById(`phone-p-${index}`).textContent = `📞 ${phone}`;
+                        const check = document.getElementById(`check-map-${index}`);
+                        check.disabled = false;
+                        check.checked = true;
+
+                        mapsLeads[index] = {
+                            name: place.name,
+                            phone: cleanPhone
+                        };
+                    } else {
+                        document.getElementById(`phone-p-${index}`).textContent = `❌ Sem telefone`;
+                        // Remove item se não tiver telefone? Opcional. 
+                        // Vamos manter mas desabilitado
+                    }
+                });
             });
         }
 
-        function importInstaLeads() {
+        function importMapsLeads() {
             let count = 0;
-            instaLeads.forEach((lead, index) => {
-                const check = document.getElementById(`check-insta-${index}`);
-                if (check && check.checked) {
+            mapsLeads.forEach((lead, index) => {
+                const check = document.getElementById(`check-map-${index}`);
+                if (check && check.checked && lead) {
+                    // Adiciona à lista principal
                     contatosData.push({
                         'Nome': lead.name,
                         'Telefone': lead.phone,
-                        '_telefone_limpo': "55" + lead.phone
+                        '_telefone_limpo': lead.phone
                     });
                     count++;
                 }
@@ -1498,126 +1385,16 @@
 
             if (count > 0) {
                 switchTab('sender');
+                // Re-render preview
                 processContacts(contatosData);
-                showToast(`${count} leads do Instagram importados!`);
+                showToast(`${count} leads importados com sucesso!`);
             } else {
                 showToast("Nenhum lead selecionado.", "error");
             }
         }
-
-        // --- GOOGLE MAPS LOGIC ---
-        let mapsLeads = [];
-        let placesService;
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-            const pane = document.getElementById(`tab-${tab}`);
-            const btn = document.getElementById(`btn-tab-${tab}`);
-
-            if (pane) pane.classList.add('active');
-            if (btn) btn.classList.add('active');
-        }
-
-        function initAutocomplete() {
-            // Callback do Google Maps
-            placesService = new google.maps.places.PlacesService(document.createElement('div'));
-        }
-
-        async function searchMaps() {
-            const query = document.getElementById('mapsQuery').value;
-            if (!query) return showToast("Digite o que procura.", "error");
-
-            const btn = document.getElementById('btnMapsSearch');
-            btn.disabled = true;
-            btn.textContent = "🔍 BUSCANDO...";
-
-            mapsLeads = []; // Limpar anterior
-            renderMapsResults();
-
-            const request = { query: query };
-
-            placesService.textSearch(request, async (results, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    showToast(`Buscando detalhes de ${results.length} locais...`);
-
-                    for (const place of results) {
-                        await new Promise(resolve => {
-                            placesService.getDetails({
-                                placeId: place.place_id,
-                                fields: ['name', 'formatted_phone_number', 'formatted_address']
-                            }, (details, dStatus) => {
-                                if (dStatus === google.maps.places.PlacesServiceStatus.OK && details.formatted_phone_number) {
-                                    mapsLeads.push({
-                                        nome: details.name,
-                                        telefone: details.formatted_phone_number,
-                                        address: details.formatted_address
-                                    });
-                                    renderMapsResults(); // Update real-time
-                                }
-                                // Pequeno delay para evitar Rate Limit da API do Google
-                                setTimeout(resolve, 200);
-                            });
-                        });
-                    }
-
-                    btn.disabled = false;
-                    btn.textContent = "🔍 BUSCAR LEADS";
-                    showToast(`Busca finalizada! ${mapsLeads.length} leads com telefone.`);
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = "🔍 BUSCAR LEADS";
-                    showToast("Erro na busca: " + status, "error");
-                }
-            });
-        }
-
-        function renderMapsResults() {
-            const list = document.getElementById('mapsResultsList');
-            document.getElementById('mapsResultsCount').style.display = 'block';
-            document.getElementById('totalMapsLeads').textContent = mapsLeads.length;
-            document.getElementById('btnImportLeads').disabled = mapsLeads.length === 0;
-
-            if (mapsLeads.length === 0) {
-                list.innerHTML = '<div style="padding: 20px; text-align: center;">Nenhum lead com telefone encontrado.</div>';
-                return;
-            }
-
-            list.innerHTML = mapsLeads.map((lead, i) => `
-                <div class="maps-item">
-                    <div class="maps-info">
-                        <h4>${lead.nome}</h4>
-                        <p>${lead.telefone} | ${lead.address || ''}</p>
-                    </div>
-                    <input type="checkbox" class="maps-checkbox" data-index="${i}" checked>
-                </div>
-            `).join('');
-        }
-
-        function importLeadsToSender() {
-            const selectedIdx = Array.from(document.querySelectorAll('.maps-checkbox:checked')).map(cb => cb.dataset.index);
-            if (selectedIdx.length === 0) return showToast("Selecione ao menos um lead.", "error");
-
-            const imported = selectedIdx.map(idx => {
-                const lead = mapsLeads[idx];
-                const phone = limparTelefone(lead.telefone);
-                return {
-                    nome: lead.nome,
-                    telefone: lead.telefone,
-                    _telefone_limpo: phone,
-                    _nome_exibicao: lead.nome
-                };
-            });
-
-            contatosData = [...contatosData, ...imported];
-            mostrarPreview();
-            switchTab('sender');
-            showToast(`${imported.length} leads importados para o disparo!`);
-        }
     </script>
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWIu9AMbRBq9eAZ7B_OzjBoLjfPIfiXZg&libraries=places&callback=initAutocomplete"></script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWIu9AMbRBq9eAZ7B_OzjBoLjfPIfiXZg&libraries=places&callback=initMap"></script>
 </body>
 
 </html>
