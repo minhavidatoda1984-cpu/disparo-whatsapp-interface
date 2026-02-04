@@ -688,7 +688,7 @@
                 MASSA</button>
             <button id="btn-tab-maps" class="tab-btn" onclick="switchTab('maps')">📍 EXTRAÇÃO MAPS</button>
             <button id="btn-tab-groups" class="tab-btn" onclick="switchTab('groups')">👥 EXTRAÇÃO GRUPOS</button>
-            <button id="btn-tab-insta" class="tab-btn" onclick="switchTab('insta')">📸 EXTRAÇÃO INSTA</button>
+
         </div>
 
         <!-- Tab 1: MG Sender -->
@@ -712,23 +712,47 @@
                             <div class="form-group">
                                 <label>Webhook URL (N8N)</label>
                                 <input type="text" id="n8nWebhook" placeholder="Sua URL do Webhook"
-                                    value="https://n8n.naturaisterravida.com.br/webhook/conexao-limpa-v1">
+                                    value="https://n8n.naturaisterravida.com.br/webhook/disparo-whatsapp">
                             </div>
                             <div id="connectionPanel"
                                 style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); text-align: center;">
+
                                 <div id="statusBadge"
                                     style="display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 15px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">
                                     🔴 NÃO CONECTADO
                                 </div>
+
+                                <!-- Campo de Instância Tornado Visível -->
+                                <div style="margin-bottom: 15px; text-align: left;">
+                                    <label style="font-size: 11px;">Nome da Instância (Sessão)</label>
+                                    <div style="display: flex; gap: 5px;">
+                                        <input type="text" id="instanceName" value="assessor_prosperazap"
+                                            placeholder="Ex: mg_12345"
+                                            style="text-align: center; font-weight: bold; color: var(--primary); flex: 1;">
+                                        <button onclick="generateNewInstance()"
+                                            style="padding: 5px 10px; font-size: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);"
+                                            title="Gerar Novo Nome">🔄</button>
+                                    </div>
+                                </div>
+
                                 <h3 id="instanceDisplay" style="font-size: 14px; margin-bottom: 15px; display: none;">
                                     Sessão: <span style="color: var(--primary);">---</span></h3>
-                                <button id="btnConnect" class="btn-primary" onclick="startQRConnection()"
-                                    style="width: 100%;">
-                                    📲 CONECTAR WHATSAPP
-                                </button>
-                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">Clique acima
-                                    para gerar o QR Code e parear seu aparelho.</p>
-                                <input type="hidden" id="instanceName" value="">
+
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <button id="btnConnect" class="btn-primary" onclick="startQRConnection()"
+                                        style="width: 100%;">
+                                        📲 CONECTAR WHATSAPP
+                                    </button>
+
+                                    <button id="btnLogout" onclick="forceLogout()"
+                                        style="width: 100%; padding: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 12px; border-radius: 12px; cursor: pointer;">
+                                        ⚠️ DESCONECTAR / SAIR
+                                    </button>
+                                </div>
+
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">
+                                    Use "Desconectar" se o QR Code não aparecer ou se quiser trocar de conta.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -842,6 +866,9 @@
 
                 <div class="button-group">
                     <button class="btn-danger" style="flex: 0.3;" onclick="limparFormulario()">LIMPAR</button>
+                    <button class="btn-accent"
+                        style="flex: 0.3; background: #1D6F42; color: white; border: 1px solid rgba(255,255,255,0.1);"
+                        onclick="exportToExcel(contatosData, 'lista_final_disparo')">📊 EXCEL</button>
                     <button class="btn-accent" id="btnSchedule" onclick="agendarDisparo()">AGENDAR DISPARO</button>
                     <button class="btn-primary" id="btnSend" onclick="iniciarDisparo()">🔥 DISPARO IMEDIATO</button>
                 </div>
@@ -893,6 +920,48 @@
                         Carregue os grupos onde você está e extraia todos os participantes.
                     </p>
 
+                    <!-- Configuração de API Alternativa -->
+                    <div
+                        style="background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="font-size: 14px; margin: 0; color: #ffc107;">⚙️ UazAPI (Fallback Seguro)</h3>
+                            <button onclick="unlockUazConfig()"
+                                style="background: none; border: 1px solid #ffc107; color: #ffc107; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 10px;">🔒
+                                Editar</button>
+                        </div>
+
+                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+                            Configuração protegida para extração de grupos restritos.
+                        </p>
+
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <div>
+                                <label style="font-size: 12px;">URL da UazAPI</label>
+                                <input type="text" id="extractionApiUrl" value="https://prosperazap.uazapi.com" readonly
+                                    style="width: 100%; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: #aaa; border-radius: 5px; font-size: 12px;">
+                            </div>
+                            <!-- Ocultando subdomínio pois não é usado na UazAPI direta -->
+                            <div style="display:none;">
+                                <label style="font-size: 12px;">Subdomínio</label>
+                                <input type="text" id="extractionInstance" value="default" readonly
+                                    style="width: 100%; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: #aaa; border-radius: 5px; font-size: 12px;">
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label style="font-size: 12px;">Token da Instância</label>
+                                <input type="password" id="extractionApiKey"
+                                    value="440ecac3-306c-4bdd-b14f-3c8e956830cd" readonly
+                                    style="width: 100%; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: #aaa; border-radius: 5px; font-size: 12px;">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+                            <input type="checkbox" id="useAlternativeApi" style="width: auto;">
+                            <label for="useAlternativeApi" style="font-size: 12px; margin: 0;">Usar UazAPI para
+                                extração de grupos</label>
+                        </div>
+                    </div>
+
                     <button class="btn-primary" onclick="fetchGroups()" style="width: auto; margin-bottom: 20px;">
                         🔄 CARREGAR MEUS GRUPOS
                     </button>
@@ -909,34 +978,7 @@
             </div>
         </div>
 
-        <!-- Tab 4: Extração Instagram -->
-        <div id="tab-insta" class="tab-pane">
-            <div class="content">
-                <div class="config-section" style="grid-column: span 2;">
-                    <h2>📸 Extração de Seguidores (Instagram)</h2>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
-                        Busque seguidores de perfis concorrentes ou hashtags. (Simulação)
-                    </p>
 
-                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <input type="text" id="instaQuery" placeholder="Ex: @concorrente ou #marketing"
-                            style="flex: 1;">
-                        <button class="btn-primary" onclick="searchInstagram()" style="flex: none; width: auto;">🔍
-                            BUSCAR PERFIS</button>
-                    </div>
-
-                    <div id="instaResults" class="maps-results" style="display: none;">
-                        <!-- Resultados Insta -->
-                    </div>
-
-                    <div class="button-group" style="margin-top: 20px;">
-                        <button class="btn-accent" onclick="importInstaLeads()">⬇ IMPORTAR SELECIONADOS</button>
-                        <button class="btn-accent" onclick="exportToExcel(instaLeads, 'leads_instagram')">📊 EXPORTAR
-                            EXCEL</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="status-toast" id="statusToast"></div>
@@ -953,9 +995,11 @@
             const savedWebhook = localStorage.getItem('mg_webhook');
             const savedKey = localStorage.getItem('mg_apikey');
             const savedInstance = localStorage.getItem('mg_instance');
+            const savedInstaWebhook = localStorage.getItem('mg_insta_webhook');
 
             if (savedWebhook) document.getElementById('n8nWebhook').value = savedWebhook;
             if (savedKey) document.getElementById('apiKey').value = savedKey;
+            if (savedInstaWebhook) document.getElementById('instaWebhook').value = savedInstaWebhook;
 
             if (savedInstance) {
                 document.getElementById('instanceName').value = savedInstance;
@@ -1168,6 +1212,13 @@
 
             const total = selectedBoxes.length;
             let count = 0;
+            let erros = 0;
+
+            // DELAY DE 10 SEGUNDOS ENTRE CADA LEAD
+            const DELAY_ENTRE_ENVIOS = 10000; // 10 segundos em milissegundos
+
+            // Função auxiliar para aguardar
+            const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
             for (const box of selectedBoxes) {
                 const index = box.dataset.index;
@@ -1175,11 +1226,15 @@
 
                 let mensagemFinal = msgTemplate;
                 Object.keys(contato).forEach(key => {
-                    mensagemFinal = mensagemFinal.replace(new RegExp(`{${key}}`, 'g'), contato[key]);
+                    // Usa split/join para substituir todas as ocorrências de forma segura (sem Regex)
+                    // Isso evita o erro "Nothing to repeat" se a chave for numérica
+                    const variavel = `{${key}}`;
+                    mensagemFinal = mensagemFinal.split(variavel).join(contato[key]);
                 });
 
                 const payload = {
                     number: contato._telefone_limpo,
+                    telefone: contato._telefone_limpo, // Adicionado para compatibilidade com n8n antigo
                     message: mensagemFinal,
                     media: base64Media,
                     mediaName: mediaFileName,
@@ -1192,19 +1247,49 @@
                 };
 
                 try {
-                    await fetch(webhookUrl, {
+                    // Adiciona timeout de 30 segundos para o fetch
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                    const response = await fetch(webhookUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
                     });
+
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                    }
+
                     count++;
                     updateProgress(count, total);
+                    console.log(`[SUCESSO] Contato ${index}: Enviado com sucesso.`);
                 } catch (e) {
-                    console.error("Erro no contato:", contato._telefone_limpo, e);
+                    console.error(`[ERRO] Falha ao enviar para ${contato._telefone_limpo}:`, e);
+                    erros++;
+
+                    // Atualiza status visualmente para usuário saber que houve erro neste item (opcional, se tivesse lista detalhada)
+                    showToast(`Erro no envio para ${contato._nome_exibicao || contato._telefone_limpo}: ${e.message}`, 'error');
+                }
+
+                // AGUARDA 10 SEGUNDOS ANTES DO PRÓXIMO ENVIO (exceto no último)
+                if (count + erros < total) {
+                    // Mostra contagem regressiva no status do progresso
+                    for (let seg = 10; seg > 0; seg--) {
+                        document.getElementById('progressStatus').textContent = `⏳ Aguardando ${seg}s antes do próximo envio... (${count}/${total})`;
+                        await delay(1000);
+                    }
                 }
             }
 
-            showToast(`Disparo Finalizado! ${count} enviados.`);
+            if (erros === 0) {
+                showToast(`✅ Disparo Finalizado! ${count} enviados com sucesso.`);
+            } else {
+                showToast(`⚠️ Disparo concluído: ${count} enviados, ${erros} erros.`, 'error');
+            }
             btn.disabled = false;
         }
 
@@ -1370,31 +1455,126 @@
         }
 
         // --- WHATSAPP GROUPS LOGIC ---
+
+        // Função auxiliar para obter configurações da API de extração
+        function getExtractionApiConfig() {
+            const checkbox = document.getElementById('useAlternativeApi');
+            const useAlternative = checkbox.checked;
+
+            console.log("=== VERIFICAÇÃO DE CONFIGURAÇÃO ===");
+            console.log("Checkbox UazAPI está marcado?", useAlternative);
+
+            if (useAlternative) {
+                const url = document.getElementById('extractionApiUrl').value;
+                const instance = document.getElementById('extractionInstance').value || 'default';
+                const token = document.getElementById('extractionApiKey').value;
+
+                if (!url || !token) {
+                    showToast("Configure a URL e o Token da UazAPI!", "error");
+                    return null;
+                }
+
+                return {
+                    url: url.replace(/\/$/, ''), // Remove barra final se houver
+                    instance,
+                    token: token,  // UazAPI usa 'token' no header
+                    isUazApi: true,
+                    headerName: 'token'  // Nome do header
+                };
+            } else {
+                const instance = document.getElementById('instanceName').value;
+                const apiKey = document.getElementById('apiKey').value;
+
+                if (!instance || !apiKey) {
+                    showToast("Conecte seu WhatsApp primeiro na aba de Disparo.", "error");
+                    return null;
+                }
+
+                return {
+                    url: EVOLUTION_URL,
+                    instance,
+                    token: apiKey,  // Evolution usa 'apikey' mas armazenamos como token
+                    isUazApi: false,
+                    headerName: 'apikey'  // Nome do header
+                };
+            }
+        }
+
         async function fetchGroups() {
-            // ... (rest of implementation)
-
-            const instance = document.getElementById('instanceName').value;
-            const apiKey = document.getElementById('apiKey').value;
-
-            if (!instance || !apiKey) return showToast("Conecte seu WhatsApp primeiro na aba de Disparo.", "error");
+            const config = getExtractionApiConfig();
+            if (!config) return;
 
             document.getElementById('groupsList').style.display = 'block';
             document.getElementById('groupsList').innerHTML = '<div style="padding:20px; text-align:center;">⏳ Buscando grupos...</div>';
 
             try {
-                const res = await fetch(`${EVOLUTION_URL}/group/fetchAllGroups/${instance}?getParticipants=false`, {
-                    headers: { 'apikey': apiKey }
-                });
+                const apiInfo = config.isUazApi ? ' (via UazAPI)' : '';
+                console.log(`Buscando grupos${apiInfo}...`);
+                console.log("=== DEBUG CONFIGURAÇÃO ===");
+                console.log("URL:", config.url);
+                console.log("Instance:", config.instance);
+                console.log("Header Name:", config.headerName);
+                console.log("Token (primeiros 10 chars):", config.token.substring(0, 10) + "...");
+
+                // UazAPI usa /group/list, Evolution usa /group/fetchAllGroups
+                const endpoint = config.isUazApi
+                    ? `/group/list?noparticipants=true&force=true`
+                    : `/group/fetchAllGroups/${config.instance}?getParticipants=false`;
+
+                const fullUrl = `${config.url}${endpoint}`;
+                console.log("URL completa:", fullUrl);
+
+                // Monta headers dinâmicos
+                const headers = {};
+                headers[config.headerName] = config.token;
+                console.log("Headers:", headers);
+
+                const res = await fetch(fullUrl, { headers });
+                console.log("Status da resposta:", res.status);
+
                 const data = await res.json();
+                console.log("Dados recebidos (RAW):", data);
+
+                // Normaliza os dados
+                let groupsList = [];
 
                 if (Array.isArray(data)) {
-                    renderGroups(data);
+                    console.log("Formato detectado: Array direto");
+                    groupsList = data;
+                } else if (data && Array.isArray(data.groups)) {
+                    console.log("Formato detectado: Objeto com propriedade .groups");
+                    groupsList = data.groups;
+                } else if (data && Array.isArray(data.response)) {
+                    console.log("Formato detectado: Objeto com propriedade .response");
+                    groupsList = data.response;
+                } else if (data && Array.isArray(data.data)) {
+                    console.log("Formato detectado: Objeto com propriedade .data");
+                    groupsList = data.data;
+                }
+
+                console.log(`Total de grupos extraídos: ${groupsList.length}`);
+                if (groupsList.length > 0) {
+                    console.log("Exemplo do primeiro grupo:", groupsList[0]);
+                }
+
+                if (groupsList.length > 0) {
+                    renderGroups(groupsList);
+                    if (config.isUazApi) {
+                        showToast(`✓ ${groupsList.length} grupos carregados via UazAPI!`);
+                    }
+                } else if (data.error) {
+                    console.error("Erro da API:", data.error);
+                    document.getElementById('groupsList').innerHTML = `<div style="padding:20px; text-align:center;">❌ Erro da API: ${data.error}</div>`;
                 } else {
-                    document.getElementById('groupsList').innerHTML = '<div style="padding:20px; text-align:center;">❌ Nenhum grupo encontrado ou erro na API.</div>';
+                    console.warn("Nenhum grupo encontrado nos dados. Estrutura desconhecida.");
+                    document.getElementById('groupsList').innerHTML = '<div style="padding:20px; text-align:center;">❌ Nenhum grupo encontrado.<br><small>Verifique o console para debugar a estrutura.</small></div>';
                 }
             } catch (e) {
-                console.error(e);
-                document.getElementById('groupsList').innerHTML = `<div style="padding:20px; text-align:center;">❌ Erro: ${e.message}</div>`;
+                console.error("=== ERRO COMPLETO ===");
+                console.error("Mensagem:", e.message);
+                console.error("Stack:", e.stack);
+                console.error("Erro completo:", e);
+                document.getElementById('groupsList').innerHTML = `<div style="padding:20px; text-align:center;">❌ Erro: ${e.message}<br><small>Veja o console (F12) para detalhes</small></div>`;
             }
         }
 
@@ -1402,129 +1582,387 @@
             const list = document.getElementById('groupsList');
             list.innerHTML = '';
 
-            if (groups.length === 0) {
+            console.log("Iniciando renderização de grupos:", groups);
+
+            if (!groups || groups.length === 0) {
                 list.innerHTML = '<div style="padding:20px; text-align:center;">Você não participa de nenhum grupo.</div>';
                 return;
             }
 
+            let renderedCount = 0;
+
             groups.forEach(g => {
+                // Tenta encontrar ID e Nome em várias propriedades possíveis (Case Insensitive)
+                // UazAPI costuma usar 'JID', 'jid', 'Name', 'subject' ou estrutura aninhada
+                const id = g.id || g.jid || g.JID || g.groupId || (g.metadata && g.metadata.id);
+                const name = g.subject || g.name || g.Name || g.newSubject || (g.metadata && g.metadata.subject) || "Grupo sem nome";
+
+                // Se não tem ID, não tem como extrair
+                if (!id) {
+                    console.warn("Grupo ignorado (sem ID):", g);
+                    return;
+                }
+
+                renderedCount++;
+
                 const div = document.createElement('div');
                 div.className = 'maps-item';
                 div.innerHTML = `
                     <div class="maps-info">
-                        <h4>${g.subject}</h4>
-                        <p>ID: ${g.id}</p>
-                        <p style="color: var(--primary);">${g.participants ? g.participants.length + ' membros' : 'Clique para ver membros'}</p>
+                        <h4>${name}</h4>
+                        <p>ID: ${id}</p>
+                        <p style="color: var(--primary);">
+                            ${g.participants ? g.participants.length : (g.Participants ? g.Participants.length : 'Clique para ver membros')} membros
+                        </p>
                     </div>
-                    <button class="btn-accent" style="width: auto; font-size: 11px; padding: 8px;" onclick="extractGroupParticipants('${g.id}', '${g.subject}')">
+                    <button class="btn-accent" style="width: auto; font-size: 11px; padding: 8px;" onclick="extractGroupParticipants('${id}', '${name.replace(/'/g, "\\'")}')">
                         ⬇ EXTRAIR MEMBROS
                     </button>
                 `;
                 list.appendChild(div);
             });
 
+            if (renderedCount === 0) {
+                list.innerHTML = '<div style="padding:20px; text-align:center;">Grupos encontrados, mas sem ID válido para exibição. Verifique o Console (F12).</div>';
+                return;
+            }
+
             // Opção para exportar TODOS os grupos
             const exportBtn = document.createElement('div');
             exportBtn.className = 'button-group';
             exportBtn.style.marginTop = '20px';
-            exportBtn.innerHTML = `<button class="btn-accent" onclick="exportToExcel(groups.map(g => ({name: g.subject, phone: g.id.split('@')[0]})), 'meus_grupos_whatsapp')">📊 EXPORTAR LISTA DE GRUPOS</button>`;
+            exportBtn.innerHTML = `<button class="btn-accent" onclick="exportToExcel(Array.from(document.querySelectorAll('.maps-item')).map(item => ({name: item.querySelector('h4').innerText, phone: item.querySelector('p').innerText.replace('ID: ', '')})), 'meus_grupos_whatsapp')">📊 EXPORTAR LISTA DE GRUPOS</button>`;
             list.appendChild(exportBtn);
         }
 
+        function unlockUazConfig() {
+            const pass = prompt("Digite a senha de administrador da UazAPI:");
+            if (pass === "212003") {
+                const fields = ['extractionApiUrl', 'extractionApiKey'];
+                fields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.removeAttribute('readonly');
+                        el.style.background = 'rgba(255, 255, 255, 0.1)';
+                        el.style.color = '#fff';
+                        el.style.border = '1px solid var(--primary)';
+                    }
+                });
+                showToast("Edição liberada!");
+            } else {
+                alert("Senha incorreta.");
+            }
+        }
+
         async function extractGroupParticipants(groupJid, groupName) {
-            const instance = document.getElementById('instanceName').value;
-            const apiKey = document.getElementById('apiKey').value;
+            let config = getExtractionApiConfig();
+            if (!config) return;
 
             document.getElementById('groupLoading').style.display = 'block';
-            showToast(`Extraindo membros de: ${groupName}... aguarde.`);
 
-            try {
-                // Fetch participants detalhado
-                const res = await fetch(`${EVOLUTION_URL}/group/participants/${instance}?groupJid=${groupJid}`, {
-                    headers: { 'apikey': apiKey }
-                });
-                const data = await res.json();
+            // Função interna para buscar dados
+            const fetchData = async (conf) => {
+                const headers = {};
+                headers[conf.headerName] = conf.token;
+                const ts = Date.now(); // Cache Buster
 
-                // A estrutura de retorno pode variar, geralmente é data.participants ou o próprio array
-                const participants = data.participants || data;
+                try {
+                    console.log(`%c [V4.1 - NO-CACHE] Iniciando busca... TS: ${ts}`, 'color: orange; font-weight: bold;');
 
-                if (participants && Array.isArray(participants)) {
-                    let count = 0;
-                    participants.forEach(p => {
-                        const num = p.id.split('@')[0];
-                        // Evitar adicionar o próprio número ou números inválidos
-                        if (num.length > 5 && !p.admin) { // Opcional: filtrar admins se quiser
-                            contatosData.push({
-                                'Nome': `Membro ${groupName}`,
-                                'Telefone': num,
-                                '_telefone_limpo': "55" + num.replace(/^55/, '') // Garante 55
-                            });
-                            count++;
-                        }
-                    });
-
-                    if (count > 0) {
-                        switchTab('sender');
-                        processContacts(contatosData);
-                        showToast(`Sucesso! ${count} membros de "${groupName}" adicionados.`);
+                    if (conf.isUazApi) {
+                        console.log("Tentando via UazAPI...", conf.url);
+                        const res = await fetch(`${conf.url}/group/info?_t=${ts}`, {
+                            method: 'POST',
+                            headers: { ...headers, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ groupjid: groupJid, getInviteLink: false })
+                        });
+                        const d = await res.json();
+                        return d.participants || d.Participants || [];
                     } else {
-                        showToast("Nenhum membro válido encontrado neste grupo.", "error");
+                        console.log("Tentando via Evolution...", conf.url);
+
+                        // 1. Tentar endpoint v2 (Novo Padrão - Geralmente traz PushName)
+                        try {
+                            const urlV2 = `${conf.url}/group/find/${conf.instance}?groupJid=${groupJid}&_t=${ts}`;
+                            console.log(`Tentando V2: ${urlV2}`);
+                            const res = await fetch(urlV2, { headers, cache: 'no-store' });
+                            if (res.ok) {
+                                const d = await res.json();
+                                const p = d.participants || (d.groupMetadata && d.groupMetadata.participants);
+                                if (p && p.length > 0) {
+                                    console.log(`✅ SUCESSO V2! ${p.length} participantes. Exemplo:`, p[0]);
+                                    return p;
+                                }
+                            } else {
+                                console.warn(`V2 falhou (Status ${res.status}).`);
+                            }
+                        } catch (e) { console.warn("Erro V2:", e); }
+
+                        // 2. Tentar endpoint v1 (Padrão)
+                        try {
+                            const urlV1 = `${conf.url}/group/findGroup/${conf.instance}?groupJid=${groupJid}&_t=${ts}`;
+                            console.log(`Tentando V1: ${urlV1}`);
+                            const res = await fetch(urlV1, { headers, cache: 'no-store' });
+                            if (res.ok) {
+                                const d = await res.json();
+                                let p = d.participants || (d.data && d.data.participants);
+                                if (p && p.length > 0) return p;
+                            }
+                        } catch (e) { console.warn("Erro V1:", e); }
+
+                        // 3. Fallback Legacy
+                        try {
+                            console.log("Tentando fallback legacy...");
+                            const res2 = await fetch(`${conf.url}/group/participants/${conf.instance}?groupJid=${groupJid}&_t=${ts}`, { headers, cache: 'no-store' });
+                            const d2 = await res2.json();
+                            return Array.isArray(d2) ? d2 : (d2.participants || []);
+                        } catch (e) { console.warn("Erro Legacy:", e); }
+
+                        return [];
+                    }
+                } catch (e) {
+                    console.error("Erro CRÍTICO na requisição de participantes:", e);
+                    return null;
+                }
+            };
+
+            // Função interna para processar e classificar
+            const analyzeParticipants = async (list, conf) => {
+                let reais = [];
+                let lids = [];
+
+                console.log(`📋 Processando ${list.length} participantes...`);
+
+                for (let index = 0; index < list.length; index++) {
+                    const p = list[index];
+
+                    // DEBUG: Verificando onde está o nome
+                    if (index < 3) console.log(`🔍 DEBUG ITEM ${index}:`, p);
+
+                    let rawId = p.id || p.jid || p.JID || (typeof p === 'string' ? p : "");
+                    if (!rawId) continue;
+
+                    let realNumber = null;
+
+                    // Helper para normalizar propriedade
+                    const phoneVal = p.phoneNumber || p.PhoneNumber;
+
+                    // CORREÇÃO CRÍTICA: Prioridade para 'phoneNumber' se existir
+                    if (phoneVal && !phoneVal.includes('@lid')) {
+                        realNumber = phoneVal;
+                    } else if (rawId.includes('@lid')) {
+                        if (p.user && !p.user.includes('@lid')) realNumber = p.user;
+                        else if (p.user_id && !p.user_id.includes('@lid')) realNumber = p.user_id;
+                        else if (p.phone) realNumber = p.phone;
+                        else {
+                            lids.push({ nome: p.notify || p.pushName || "LID", numero: rawId.split('@')[0], tipo: 'lid' });
+                            continue;
+                        }
+                    } else {
+                        realNumber = rawId.split('@')[0].split(':')[0];
+                    }
+
+                    if (realNumber) {
+                        const clean = realNumber.replace(/\D/g, "");
+
+                        // Tenta encontrar o nome em várias propriedades
+                        let possibleName = p.notify || p.pushName || p.name || p.Name || p.verifiedName || p.vname || p.subject || (p.contact && p.contact.name);
+
+                        // Se não encontrou nome E não é UazAPI, tenta buscar do banco de contatos
+                        if (!possibleName && conf && !conf.isUazApi) {
+                            try {
+                                const headers = {};
+                                headers[conf.headerName] = conf.token;
+                                const contactRes = await fetch(`${conf.url}/chat/findContacts/${conf.instance}`, {
+                                    headers,
+                                    cache: 'no-store'
+                                });
+                                if (contactRes.ok) {
+                                    const contacts = await contactRes.json();
+                                    const contactData = Array.isArray(contacts) ? contacts : (contacts.data || []);
+                                    const match = contactData.find(c => {
+                                        const cNum = (c.id || c.jid || '').replace(/\D/g, '');
+                                        return cNum === clean;
+                                    });
+                                    if (match) {
+                                        possibleName = match.name || match.pushName || match.notify;
+                                        if (possibleName) console.log(`✅ Nome encontrado na agenda: ${possibleName}`);
+                                    }
+                                }
+                            } catch (e) {
+                                console.warn(`Erro ao buscar contato ${clean}:`, e);
+                            }
+                        }
+
+                        // Se não achar nome, usa o número formatado para identificação
+                        const name = possibleName || `+${clean}`;
+
+                        reais.push({ nome: name, numero: clean, tipo: 'real' });
                     }
                 }
+                return { reais, lids };
+            };
+            try {
+                showToast(`Extraindo participantes...`);
+                let participants = await fetchData(config);
+
+                if (!participants || participants.length === 0) throw new Error("API não retornou participantes.");
+
+                let { reais, lids } = await analyzeParticipants(participants, config);
+                let fallbackUsed = false;
+                let fallbackError = "";
+
+                // SMART FALLBACK
+                if (reais.length === 0 && lids.length > 0 && !config.isUazApi) {
+                    const uazUrl = document.getElementById('extractionApiUrl').value;
+                    const uazToken = document.getElementById('extractionApiKey').value;
+
+                    if (uazUrl && uazToken) {
+                        showToast("Evolution retornou mascarados. Tentando UazAPI...");
+                        fallbackUsed = true;
+
+                        const uazConfig = {
+                            url: uazUrl.replace(/\/$/, ''),
+                            instance: document.getElementById('extractionInstance').value || 'default',
+                            token: uazToken,
+                            isUazApi: true,
+                            headerName: 'token'
+                        };
+
+                        const uazParticipants = await fetchData(uazConfig);
+                        if (uazParticipants && uazParticipants.length > 0) {
+                            const analysis = analyzeParticipants(uazParticipants);
+                            // Se a UazAPI trouxe reais, usamos ela
+                            if (analysis.reais.length > 0) {
+                                console.log("✓ Sucesso com UazAPI!");
+                                reais = analysis.reais;
+                                lids = analysis.lids;
+                                config = uazConfig;
+                            } else {
+                                fallbackError = "UazAPI tbm só trouxe LIDs.";
+                            }
+                        } else {
+                            fallbackError = "UazAPI falhou/vazia.";
+                        }
+                    } else {
+                        fallbackError = "Sem credenciais UazAPI.";
+                    }
+                }
+
+                // Exibe resultados
+                let mensagem = `Grupo: ${groupName}\n\n`;
+                mensagem += `✅ Números Reais: ${reais.length}\n`;
+                mensagem += `⚠️ IDs Mascarados: ${lids.length}\n\n`;
+
+                if (reais.length === 0 && lids.length > 0) {
+                    mensagem += `⚠️ AVISO: Apenas IDs mascarados encontrados.\n`;
+                    if (fallbackUsed) {
+                        mensagem += `(Tentativa UazAPI: ${fallbackError})\n\n`;
+                    }
+                    mensagem += `Deseja importar a lista de LIDs assim mesmo?`;
+                } else if (reais.length > 0) {
+                    mensagem += `Deseja importar os ${reais.length} contatos?`;
+                } else {
+                    alert("Nenhum contato encontrado.");
+                    return;
+                }
+
+                if (confirm(mensagem)) {
+                    if (confirm("Limpar lista atual antes de importar?")) contatosData = [];
+                    const lista = reais.length > 0 ? reais : lids;
+                    lista.forEach(c => {
+                        contatosData.push({
+                            'Nome': c.nome, 'Telefone': c.numero, '_telefone_limpo': c.numero, '_nome_exibicao': c.nome, 'Origem': groupName
+                        });
+                    });
+                    mostrarPreview();
+                    switchTab('sender');
+                    showToast(`${lista.length} importados.`);
+                }
+
             } catch (e) {
                 console.error(e);
-                showToast("Erro ao extrair participantes: " + e.message, "error");
+                showToast("Erro: " + e.message, "error");
             } finally {
                 document.getElementById('groupLoading').style.display = 'none';
             }
         }
 
-        // --- INSTAGRAM LOGIC (SIMULATION) ---
+
+
+        // --- INSTAGRAM LOGIC (REAL VIA N8N) ---
         let instaLeads = [];
 
-        function searchInstagram() {
-            const query = document.getElementById('instaQuery').value.replace('@', '').replace('#', '');
+        async function searchInstagram() {
+            const query = document.getElementById('instaQuery').value;
+            const webhook = document.getElementById('instaWebhook').value;
+
             if (!query) return showToast("Digite um perfil ou hashtag.", "error");
+            if (!webhook) return showToast("Configure o Webhook do n8n para Instagram primeiro.", "error");
+
+            // Salvar para não ter que digitar sempre
+            localStorage.setItem('mg_insta_webhook', webhook);
+
+            const btn = document.getElementById('btnInstaSearch');
+            btn.disabled = true;
+            btn.textContent = "🔍 EXTRAINDO...";
 
             document.getElementById('instaResults').style.display = 'block';
-            document.getElementById('instaResults').innerHTML = '<div style="padding:20px; text-align:center;">🔍 Analisando perfil e seguidores...</div>';
+            document.getElementById('instaResults').innerHTML = '<div style="padding:20px; text-align:center;">⏳ Iniciando extração via n8n...<br>Isso pode levar alguns minutos dependendo da quantidade de dados.</div>';
 
-            // Simulação de delay de API
-            setTimeout(() => {
-                // Resultados baseados no que foi digitado para parecer real
-                const mockResults = [
-                    { username: `${query}_official`, name: `Atendimento ${query}`, phone: '11999887766' },
-                    { username: `${query}.vendas`, name: `Vendas ${query}`, phone: '21988776655' },
-                    { username: `faclube.${query}`, name: `Fã Clube ${query}`, phone: '11977665544' },
-                    { username: `${query}_suporte`, name: `Suporte ${query}`, phone: '31966554433' },
-                    { username: `mkt.${query}`, name: `Marketing ${query}`, phone: '41955443322' },
-                    { username: `${query}.loja`, name: `Loja ${query}`, phone: '51944332211' }
-                ];
+            try {
+                const response = await fetch(webhook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: query,
+                        timestamp: new Date().getTime()
+                    })
+                });
 
-                displayInstaResults(mockResults);
-            }, 2000);
+                if (!response.ok) throw new Error("O Webhook retornou um erro.");
+
+                const data = await response.json();
+
+                // Esperamos um array ou um objeto que contenha a lista
+                const leads = Array.isArray(data) ? data : (data.leads || data.data || []);
+
+                if (leads.length > 0) {
+                    displayInstaResults(leads);
+                    showToast(`Sucesso! ${leads.length} leads encontrados.`);
+                } else {
+                    document.getElementById('instaResults').innerHTML = '<div style="padding:20px; text-align:center;">❌ Nenhum lead com telefone encontrado para esta busca.</div>';
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('instaResults').innerHTML = `<div style="padding:20px; text-align:center; color: #ef4444;">❌ Erro na conexão com n8n:<br>${err.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "🔍 BUSCAR LEADS REAIS";
+            }
         }
 
         function displayInstaResults(results) {
             const container = document.getElementById('instaResults');
             container.innerHTML = '';
-            instaLeads = [];
+            instaLeads = results;
 
             results.forEach((user, index) => {
-                instaLeads[index] = user;
+                const phone = user.phone || user.telefone || user.whatsapp;
+                const name = user.name || user.nome || user.username;
 
                 const div = document.createElement('div');
                 div.className = 'maps-item';
                 div.innerHTML = `
                     <div class="maps-info" style="display:flex; align-items:center; gap:10px;">
-                        <div style="width:40px; height:40px; background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border-radius:50%;"></div>
+                        <div style="width:40px; height:40px; background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px;">👤</div>
                         <div>
-                            <h4>@${user.username}</h4>
-                            <p>${user.name}</p>
-                            <p style="color: var(--primary);">📞 ${user.phone}</p>
+                            <h4>@${user.username || name}</h4>
+                            <p>${name}</p>
+                            ${phone ? `<p style="color: var(--primary);">📞 ${phone}</p>` : '<p style="color: #ef4444;">Número não encontrado</p>'}
                         </div>
                     </div>
-                    <input type="checkbox" id="check-insta-${index}" checked>
+                    <input type="checkbox" id="check-insta-${index}" ${phone ? 'checked' : 'disabled'}>
                 `;
                 container.appendChild(div);
             });
@@ -1535,27 +1973,35 @@
             instaLeads.forEach((lead, index) => {
                 const check = document.getElementById(`check-insta-${index}`);
                 if (check && check.checked) {
-                    contatosData.push({
-                        'Nome': lead.name,
-                        'Telefone': lead.phone,
-                        '_telefone_limpo': "55" + lead.phone
-                    });
-                    count++;
+                    const phone = lead.phone || lead.telefone || lead.whatsapp;
+                    const name = lead.name || lead.nome || lead.username;
+
+                    if (phone) {
+                        contatosData.push({
+                            'Nome': name,
+                            'Telefone': phone,
+                            '_telefone_limpo': limparTelefone(phone),
+                            '_nome_exibicao': name
+                        });
+                        count++;
+                    }
                 }
             });
 
             if (count > 0) {
+                mostrarPreview();
                 switchTab('sender');
-                processContacts(contatosData);
-                showToast(`${count} leads do Instagram importados!`);
+                showToast(`${count} leads do Instagram importados para o disparo!`);
             } else {
-                showToast("Nenhum lead selecionado.", "error");
+                showToast("Nenhum lead com telefone selecionado.", "error");
             }
         }
 
         // --- GOOGLE MAPS LOGIC ---
         let mapsLeads = [];
         let placesService;
+        let currentPage = 1;
+        const leadsPerPage = 50;
 
         function switchTab(tab) {
             document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -1582,6 +2028,7 @@
             btn.textContent = "🔍 BUSCANDO...";
 
             mapsLeads = []; // Limpar anterior
+            currentPage = 1; // Reset página
             renderMapsResults();
 
             const request = { query: query };
@@ -1632,15 +2079,83 @@
                 return;
             }
 
-            list.innerHTML = mapsLeads.map((lead, i) => `
+            // Calcular paginação
+            const totalPages = Math.ceil(mapsLeads.length / leadsPerPage);
+            const startIndex = (currentPage - 1) * leadsPerPage;
+            const endIndex = startIndex + leadsPerPage;
+            const currentLeads = mapsLeads.slice(startIndex, endIndex);
+
+            // Renderizar leads da página atual
+            let html = currentLeads.map((lead, i) => {
+                const globalIndex = startIndex + i;
+                return `
                 <div class="maps-item">
                     <div class="maps-info">
                         <h4>${lead.nome}</h4>
                         <p>${lead.telefone} | ${lead.address || ''}</p>
                     </div>
-                    <input type="checkbox" class="maps-checkbox" data-index="${i}" checked>
+                    <input type="checkbox" class="maps-checkbox" data-index="${globalIndex}" checked>
                 </div>
-            `).join('');
+            `;
+            }).join('');
+
+            // Adicionar controles de paginação se houver mais de 50 leads
+            if (totalPages > 1) {
+                html += `
+                <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} 
+                        style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; opacity: ${currentPage === 1 ? '0.5' : '1'};">
+                        ← Anterior
+                    </button>
+                    
+                    <div style="display: flex; gap: 5px;">
+                        ${generatePageButtons(currentPage, totalPages)}
+                    </div>
+                    
+                    <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} 
+                        style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; opacity: ${currentPage === totalPages ? '0.5' : '1'};">
+                        Próxima →
+                    </button>
+                </div>
+                <div style="text-align: center; margin-top: 10px; color: #888;">
+                    Mostrando ${startIndex + 1}-${Math.min(endIndex, mapsLeads.length)} de ${mapsLeads.length} leads | Página ${currentPage} de ${totalPages}
+                </div>
+                `;
+            }
+
+            list.innerHTML = html;
+        }
+
+        function generatePageButtons(current, total) {
+            let buttons = '';
+            const maxButtons = 5;
+            let startPage = Math.max(1, current - Math.floor(maxButtons / 2));
+            let endPage = Math.min(total, startPage + maxButtons - 1);
+
+            if (endPage - startPage < maxButtons - 1) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                buttons += `
+                    <button onclick="changePage(${i})" 
+                        style="padding: 8px 12px; background: ${i === current ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}; 
+                        color: white; border: ${i === current ? '2px solid white' : 'none'}; 
+                        border-radius: 5px; cursor: pointer; font-weight: ${i === current ? 'bold' : 'normal'};">
+                        ${i}
+                    </button>
+                `;
+            }
+            return buttons;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(mapsLeads.length / leadsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderMapsResults();
+            // Scroll para o topo da lista
+            document.getElementById('mapsResultsList').scrollIntoView({ behavior: 'smooth' });
         }
 
         function importLeadsToSender() {
@@ -1668,18 +2183,79 @@
         function exportToExcel(data, filename) {
             if (!data || data.length === 0) return showToast("Nenhum dado para exportar.", "error");
 
-            // Formata dados para excel limpo
-            const cleanData = data.map(item => ({
-                Nome: item.name || item.nome || item.username,
-                Telefone: item.phone || item.telefone || item.id,
-                Origem: filename
-            }));
+            // Formata dados para excel de forma inteligente (independente de maiúsculas/minúsculas)
+            const cleanData = data.map(item => {
+                // Tenta encontrar o nome em várias chaves possíveis
+                const nome = item.Nome || item.nome || item.name || item.username || item._nome_exibicao || "";
+                // Tenta encontrar o telefone em várias chaves possíveis
+                const telefone = item.Telefone || item.telefone || item.phone || item.number || item.jid || item._telefone_limpo || "";
+
+                return {
+                    Nome: nome,
+                    Telefone: telefone,
+                    Origem: filename,
+                    Data: new Date().toLocaleDateString()
+                };
+            });
 
             const ws = XLSX.utils.json_to_sheet(cleanData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Leads");
             XLSX.writeFile(wb, `${filename}_${new Date().getTime()}.xlsx`);
-            showToast("Download iniciado!");
+            showToast("Planilha gerada com sucesso!");
+        }
+        // NOVA FUNÇÃO: Gerar Nova Instância Aleatória
+        function generateNewInstance() {
+            const randomId = Math.random().toString(36).substring(2, 7);
+            const newName = "mg_" + randomId;
+            document.getElementById('instanceName').value = newName;
+            // Atualiza visual
+            document.getElementById('statusBadge').innerHTML = "🔴 NÃO CONECTADO (NOVA)";
+            document.getElementById('statusBadge').style.background = "rgba(239, 68, 68, 0.1)";
+            document.getElementById('statusBadge').style.color = "#ef4444";
+
+            showToast("Nova instância gerada: " + newName);
+        }
+
+        // NOVA FUNÇÃO: Forçar Logout
+        async function forceLogout() {
+            const instance = document.getElementById('instanceName').value;
+            const apiKey = document.getElementById('apiKey').value;
+
+            if (!instance) return showToast("Nenhuma instância definida.", "error");
+
+            if (!confirm("Atenção: Isso vai desconectar a instância '" + instance + "' do WhatsApp.\n\nVocê terá que escanear o QR Code novamente.\n\nDeseja continuar?")) return;
+
+            showToast("Tentando desconectar...", "info");
+
+            try {
+                // Tenta Logout
+                const res = await fetch(`${EVOLUTION_URL}/instance/logout/${instance}`, {
+                    method: 'DELETE',
+                    headers: { 'apikey': apiKey }
+                });
+
+                // Tenta Deletar (caso logout não baste ou API diferente)
+                // Ignoramos erro se falhar, pois o logout é o principal
+                try {
+                    await fetch(`${EVOLUTION_URL}/instance/delete/${instance}`, {
+                        method: 'DELETE',
+                        headers: { 'apikey': apiKey }
+                    });
+                } catch (e) { }
+
+                // Feedback visual de sucesso (mesmo se API der erro, assumimos desconexão local)
+                document.getElementById('statusBadge').innerHTML = "🔴 DESCONECTADO";
+                document.getElementById('statusBadge').style.background = "rgba(239, 68, 68, 0.1)";
+                document.getElementById('statusBadge').style.color = "#ef4444";
+                document.getElementById('qrContainer').innerHTML = "<div style='padding:20px; font-size:11px;'>Desconectado.<br>Clique em Conectar para gerar novo QR.</div>";
+
+                alert("Comando de desconexão enviado.\n\nSe o erro persistir, gere uma NOVA instância clicando no botão de 'retorno' (🔄) ao lado do nome da sessão.");
+
+            } catch (error) {
+                console.error("Erro ao desconectar:", error);
+                alert("Erro ao tentar desconectar: " + error.message + "\n\nTente gerar uma nova instância.");
+            }
         }
     </script>
     <script async
