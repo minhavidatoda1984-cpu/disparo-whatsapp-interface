@@ -96,6 +96,7 @@
             font-weight: 700;
             background: linear-gradient(to right, #fff, var(--primary));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
@@ -173,6 +174,8 @@
         input[type="text"],
         input[type="date"],
         input[type="time"],
+        input[type="number"],
+        input[type="password"],
         textarea {
             width: 100%;
             padding: 12px 14px;
@@ -186,6 +189,8 @@
         }
 
         input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="password"]:focus,
         textarea:focus {
             outline: none;
             border-color: var(--primary);
@@ -383,6 +388,29 @@
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
+        /* AI Elements */
+        .ai-badge {
+            background: linear-gradient(45deg, #4285f4, #34a853, #fbbc05, #ea4335);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            font-size: 10px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+
+        .ai-card {
+            background: rgba(66, 133, 244, 0.05);
+            border: 1px dashed rgba(66, 133, 244, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -434,21 +462,6 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .media-preview-item {
-            font-size: 11px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .remove-media {
-            color: #ef4444;
-            cursor: pointer;
-        }
-
         /* Login Overlay */
         .login-overlay {
             position: absolute;
@@ -456,7 +469,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.95);
+            background: #0f172a;
+            /* Solid color to prevent overlap visuals */
             backdrop-filter: blur(10px);
             z-index: 100;
             display: flex;
@@ -464,8 +478,9 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            border-radius: 16px;
+            border-radius: 0 0 24px 24px;
             transition: all 0.5s ease;
+            min-height: 400px;
         }
 
         .login-overlay.hidden {
@@ -476,37 +491,7 @@
         .login-box {
             width: 100%;
             max-width: 300px;
-        }
-
-        .login-box h3 {
-            margin-bottom: 20px;
             text-align: center;
-            color: var(--primary);
-            font-size: 18px;
-        }
-
-        .login-box input {
-            margin-bottom: 12px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-login {
-            width: 100%;
-            background: var(--primary);
-            color: #000;
-            margin-top: 10px;
-        }
-
-        .locked-content {
-            filter: blur(8px);
-            pointer-events: none;
-            user-select: none;
-        }
-
-        .unlocked .locked-content {
-            filter: none;
-            pointer-events: auto;
-            user-select: auto;
         }
 
         /* Tabs System */
@@ -514,23 +499,26 @@
             display: flex;
             background: rgba(255, 255, 255, 0.02);
             border-bottom: 1px solid var(--glass-border);
-            padding: 0 20px;
+            padding: 0 10px;
             overflow-x: auto;
-            scrollbar-width: none;
-            /* Firefox */
+            scroll-behavior: smooth;
         }
 
         .tabs-header::-webkit-scrollbar {
-            display: none;
-            /* Chrome/Safari */
+            height: 4px;
+        }
+
+        .tabs-header::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
         }
 
         .tab-btn {
-            padding: 15px 25px;
+            padding: 15px 20px;
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             border-bottom: 2px solid transparent;
@@ -605,6 +593,70 @@
             color: var(--text-muted);
         }
 
+        /* Relatório de Disparos */
+        .report-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .report-list {
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+        }
+
+        .report-item.success {
+            border-color: rgba(34, 197, 94, 0.2);
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .report-item.error {
+            border-color: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .status-pill {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .status-pill.success {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .status-pill.error {
+            background: #ef4444;
+            color: #fff;
+        }
+
         /* QR Code Modal */
         .modal-overlay {
             position: fixed;
@@ -677,10 +729,17 @@
             </div>
         </div>
     </div>
+
     <div class="container">
-        <div class="header">
+        <div class="header" style="position: relative;">
             <h1 id="title-main">MG Sender <span style="font-weight: 300; opacity: 0.5;">v2.0</span></h1>
             <p>DESIGN PREMIUM &bull; DISPARO INTELIGENTE &bull; MULTI-MÍDIA</p>
+
+            <!-- Botão de Atalho para Configurações -->
+            <button onclick="switchTab('admin')" title="Configurações (Área Admin)"
+                style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #ffc107; font-size: 20px; transition: 0.3s;">
+                ⚙️
+            </button>
         </div>
 
         <div class="tabs-header">
@@ -688,174 +747,131 @@
                 MASSA</button>
             <button id="btn-tab-maps" class="tab-btn" onclick="switchTab('maps')">📍 EXTRAÇÃO MAPS</button>
             <button id="btn-tab-groups" class="tab-btn" onclick="switchTab('groups')">👥 EXTRAÇÃO GRUPOS</button>
-
+            <button id="btn-tab-insta" class="tab-btn" onclick="switchTab('insta')">📸 EXTRAÇÃO INSTAGRAM</button>
+            <button id="btn-tab-admin" class="tab-btn" onclick="switchTab('admin')" style="color: #ffc107;">⚙️
+                ADMIN</button>
         </div>
 
         <!-- Tab 1: MG Sender -->
         <div id="tab-sender" class="tab-pane active">
             <div class="content">
-                <!-- Coluna 1: Configurações e Arquivos -->
                 <div class="column">
-                    <!-- CONFIGURAÇÃO NÍVEL 1: WEBHOOK E INSTÂNCIA (SENHA: magnogomes) -->
-                    <div class="config-section" style="position: relative; overflow: hidden; margin-bottom: 20px;"
-                        id="configSectionUser">
-                        <div id="loginOverlay" class="login-overlay">
-                            <div class="login-box">
-                                <h3>🔐 Conexão do Usuário</h3>
-                                <input type="password" id="passLogin" placeholder="Senha de Acesso"
-                                    style="width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: white; margin-bottom: 12px;">
-                                <button class="btn-login" onclick="checkLogin()">LIBERAR ACESSO</button>
+                    <div class="config-section" style="margin-bottom: 20px;">
+                        <h2>📱 Conexão WhatsApp</h2>
+                        <div id="connectionPanel"
+                            style="background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 16px; border: 1px solid var(--glass-border); text-align: center;">
+                            <div id="statusBadge"
+                                style="display: inline-block; padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 20px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">
+                                🔴 NÃO CONECTADO
                             </div>
-                        </div>
-                        <div class="locked-content">
-                            <h2>⚙️ Conexão & Instância</h2>
-                            <div class="form-group">
-                                <label>Webhook URL (N8N)</label>
-                                <input type="text" id="n8nWebhook" placeholder="Sua URL do Webhook"
-                                    value="https://n8n.naturaisterravida.com.br/webhook/disparo-whatsapp">
+                            <div id="instanceDisplayShort"
+                                style="margin-bottom: 20px; font-size: 13px; color: var(--text-muted);">
+                                Instância Ativa: <span style="color: var(--primary); font-weight: bold;"
+                                    id="activeInstanceName">assessor_prosperazap</span>
                             </div>
-                            <div id="connectionPanel"
-                                style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); text-align: center;">
-
-                                <div id="statusBadge"
-                                    style="display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 15px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">
-                                    🔴 NÃO CONECTADO
-                                </div>
-
-                                <!-- Campo de Instância Tornado Visível -->
-                                <div style="margin-bottom: 15px; text-align: left;">
-                                    <label style="font-size: 11px;">Nome da Instância (Sessão)</label>
-                                    <div style="display: flex; gap: 5px;">
-                                        <input type="text" id="instanceName" value="assessor_prosperazap"
-                                            placeholder="Ex: mg_12345"
-                                            style="text-align: center; font-weight: bold; color: var(--primary); flex: 1;">
-                                        <button onclick="generateNewInstance()"
-                                            style="padding: 5px 10px; font-size: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);"
-                                            title="Gerar Novo Nome">🔄</button>
-                                    </div>
-                                </div>
-
-                                <h3 id="instanceDisplay" style="font-size: 14px; margin-bottom: 15px; display: none;">
-                                    Sessão: <span style="color: var(--primary);">---</span></h3>
-
-                                <div style="display: flex; flex-direction: column; gap: 10px;">
-                                    <button id="btnConnect" class="btn-primary" onclick="startQRConnection()"
-                                        style="width: 100%;">
-                                        📲 CONECTAR WHATSAPP
-                                    </button>
-
-                                    <button id="btnLogout" onclick="forceLogout()"
-                                        style="width: 100%; padding: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 12px; border-radius: 12px; cursor: pointer;">
-                                        ⚠️ DESCONECTAR / SAIR
-                                    </button>
-                                </div>
-
-                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">
-                                    Use "Desconectar" se o QR Code não aparecer ou se quiser trocar de conta.
-                                </p>
-                            </div>
+                            <button id="btnConnect" class="btn-primary" onclick="startQRConnection()"
+                                style="width: 100%; padding: 15px; font-weight: bold;">
+                                📲 CONECTAR AGORA
+                            </button>
+                            <button id="btnLogout" class="btn-danger" onclick="forceLogout()"
+                                style="width: 100%; padding: 10px; font-size: 11px; margin-top: 10px;">
+                                🚪 DESCONECTAR WHATSAPP
+                            </button>
+                            <p
+                                style="font-size: 11px; color: var(--text-muted); margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                                💡 Para alterar o Webhook ou Chaves de API, acesse a aba <strong>⚙️ ADMIN</strong>.
+                            </p>
                         </div>
                     </div>
 
-                    <!-- CONFIGURAÇÃO NÍVEL 2: API KEY (SENHA: 212003) -->
-                    <div class="config-section" style="position: relative; overflow: hidden; margin-bottom: 20px;"
-                        id="configSectionMaster">
-                        <div id="masterOverlay" class="login-overlay">
-                            <div class="login-box">
-                                <h3>🔑 Chave de API Master</h3>
-                                <input type="password" id="passMaster" placeholder="Senha Master"
-                                    style="width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: white; margin-bottom: 12px;">
-                                <button class="btn-login" onclick="unlockMasterData()"
-                                    style="background: var(--accent); color: white;">REVELAR API KEY</button>
-                            </div>
-                        </div>
-                        <div class="locked-content">
-                            <h2>🛡️ Segurança Evolution</h2>
-                            <div class="form-group">
-                                <label>API Key Evolution (Master)</label>
-                                <input type="text" id="apiKey" placeholder="Chave API"
-                                    value="f98fed17beccac0149db6cfe6bfb7fff">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="config-section" style="margin-top: 20px;">
+                    <div class="config-section">
                         <h2>📋 Lista de Clientes</h2>
                         <div class="file-upload-wrapper">
                             <input type="file" id="excelFile" accept=".xlsx,.xls">
                             <div class="file-upload-info">
                                 <div class="icon-plus">📁</div>
                                 <span id="fileNameDisplay">Arraste seu Excel ou clique aqui</span>
-                                <span style="opacity: 0.5; font-size: 11px;">(Colunas recomendadas: Nome,
-                                    Telefone)</span>
                             </div>
                         </div>
-
-                        <div class="preview-section" id="previewSection" style="display: none; margin-top: 15px;">
+                        <div class="preview-section" id="previewSection" style="display: none;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <span style="font-size: 12px; color: var(--primary);">Total: <strong
                                         id="totalContacts">0</strong></span>
-                                <label
-                                    style="margin: 0; display: flex; align-items: center; gap: 5px; cursor: pointer;">
-                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" checked>
-                                    <span style="font-size: 12px;">Todos</span>
-                                </label>
+                                <label><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" checked> <span
+                                        style="font-size: 12px;">Todos</span></label>
                             </div>
                             <div class="preview-list" id="previewList"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Coluna 2: Mensagem e Mídia -->
                 <div class="column">
                     <div class="config-section">
                         <h2>💬 Mensagem Personalizada</h2>
                         <div class="form-group">
-                            <label>Sua Mensagem</label>
                             <textarea id="message"
                                 placeholder="Olá {nome}, seu vencimento no dia {vencimento} está próximo..."></textarea>
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                                <div class="variable-tips" id="variableTips">
-                                    <span class="variable-pill" onclick="insertVar('{nome}')">{nome}</span>
-                                </div>
-                                <span style="font-size: 11px; color: var(--text-muted);"><span id="charCount">0</span>
-                                    caracteres</span>
+                            <div class="variable-tips" id="variableTips">
+                                <span class="variable-pill" onclick="insertVar('{nome}')">{nome}</span>
                             </div>
+                            <span style="font-size: 11px; color: var(--text-muted); float: right;"><span
+                                    id="charCount">0</span> caracteres</span>
                         </div>
 
                         <div style="margin-top: 20px;">
                             <label>Anexar Mídia (Imagem/PDF/Vídeo)</label>
                             <div class="file-upload-wrapper" style="padding: 10px;">
-                                <input type="file" id="mediaFile"
-                                    accept="image/*,application/pdf,video/*,audio/mpeg,audio/ogg">
-                                <span id="mediaNameDisplay" style="font-size: 12px; color: var(--text-muted);">Clique
-                                    para
-                                    anexar arquivo</span>
+                                <input type="file" id="mediaFile" accept="image/*,application/pdf,video/*,audio/*">
+                                <span id="mediaNameDisplay" style="font-size: 12px;">Clique para anexar arquivo</span>
                             </div>
                             <label style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
                                 <input type="checkbox" id="isAudio" style="width: auto;">
-                                <span style="font-size: 12px;">Enviar como Áudio Gravado (apenas .mp3/.ogg)</span>
+                                <span style="font-size: 12px;">Enviar como Áudio Gravado</span>
                             </label>
+                        </div>
+
+                        <!-- SEÇÃO IA GENERATIVA -->
+                        <div class="ai-card" id="aiSection">
+                            <label
+                                style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                                <span style="color: #4285f4; font-weight: bold; font-size: 13px;">✨ MODO IA GENERATIVA
+                                    (AGENT)</span>
+                                <input type="checkbox" id="useAI" style="width: auto;">
+                            </label>
+                            <div id="aiOptions" style="display: none; margin-top: 10px;">
+                                <textarea id="aiPrompt"
+                                    placeholder="Instruções para a IA reescrever a mensagem... Ex: Reescreva de forma amigável e use o nome do cliente."
+                                    style="min-height: 80px; font-size: 12px; background: rgba(255,255,255,0.02);"></textarea>
+                                <p style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">A IA criará uma
+                                    variação única para cada contato para evitar banimento.</p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="config-section" style="margin-top: 20px;">
-                        <h2>⏰ Agendamento</h2>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <input type="date" id="scheduleDate">
-                            <input type="time" id="scheduleTime">
+                        <h2>🛡️ Controle de Envio</h2>
+                        <div class="form-group">
+                            <label>Delay Variável (segundos) - Recomendado: 20 a 60s</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="number" id="minDelay" value="20" min="5">
+                                <input type="number" id="maxDelay" value="60" min="10">
+                            </div>
                         </div>
+
                         <div class="form-group" style="margin-top: 15px;">
-                            <label>Delay entre Texto e Mídia (segundos)</label>
-                            <input type="number" id="msgDelay" value="3" min="0" max="60"
-                                style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; border-radius: 8px;">
+                            <label>📅 Agendamento (Opcional)</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="date" id="scheduleDate">
+                                <input type="time" id="scheduleTime">
+                            </div>
+                            <p style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Se preenchido, o n8n
+                                agendará o disparo.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="progress-container" id="progressContainer">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px;">
                         <span id="progressStatus">Enviando...</span>
                         <span id="progressPercent">0%</span>
                     </div>
@@ -864,46 +880,54 @@
                     </div>
                 </div>
 
+                <!-- Painel de Relatório -->
+                <div id="reportSection" class="report-section">
+                    <div class="report-header">
+                        <h3 style="font-size: 14px; color: var(--primary); margin: 0;">📊 Relatório de Disparo</h3>
+                        <div id="reportStats" style="font-size: 11px; color: var(--text-muted);">
+                            ✅ <span id="reportSuccess" style="color: #22c55e; font-weight: bold;">0</span> |
+                            ❌ <span id="reportError" style="color: #ef4444; font-weight: bold;">0</span>
+                        </div>
+                    </div>
+                    <div id="reportList" class="report-list">
+                        <!-- Itens do relatório aqui -->
+                    </div>
+                </div>
+
                 <div class="button-group">
-                    <button class="btn-danger" style="flex: 0.3;" onclick="limparFormulario()">LIMPAR</button>
-                    <button class="btn-accent"
-                        style="flex: 0.3; background: #1D6F42; color: white; border: 1px solid rgba(255,255,255,0.1);"
-                        onclick="exportToExcel(contatosData, 'lista_final_disparo')">📊 EXCEL</button>
-                    <button class="btn-accent" id="btnSchedule" onclick="agendarDisparo()">AGENDAR DISPARO</button>
-                    <button class="btn-primary" id="btnSend" onclick="iniciarDisparo()">🔥 DISPARO IMEDIATO</button>
+                    <button class="btn-danger" style="flex: 0.2;" onclick="limparFormulario()"
+                        title="Recarregar tudo">RESET</button>
+                    <button class="btn-warning" style="flex: 0.3; background: #f59e0b; color: #000;"
+                        onclick="limparLista()">🗑️ ESVAZIAR LISTA</button>
+                    <button class="btn-accent" style="flex: 0.2;"
+                        onclick="document.getElementById('excelImportInput').click()">📥 IMPORTAR EXCEL</button>
+                    <input type="file" id="excelImportInput" style="display: none;" accept=".xlsx, .xls, .csv"
+                        onchange="importFromExcel(this)">
+                    <button class="btn-accent" style="flex: 0.2;" onclick="agendarDisparo()">AGENDAR</button>
+                    <button class="btn-primary" style="flex: 0.3;" id="btnSend" onclick="iniciarDisparo()">🔥
+                        DISPARAR</button>
                 </div>
             </div>
         </div>
 
-        <!-- Tab 2: Google Maps Leads -->
+        <!-- Tab 2: Maps -->
         <div id="tab-maps" class="tab-pane">
             <div class="content" style="grid-template-columns: 1fr;">
                 <div class="config-section">
-                    <h2>📍 Extração de Leads Google Maps</h2>
+                    <h2>📍 Leads Google Maps</h2>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <div style="flex: 1;">
-                            <label>O que você procura? (Ex: Dentistas em São Paulo)</label>
-                            <input type="text" id="mapsQuery" placeholder="Ex: Pet Shops em Curitiba">
-                        </div>
-                        <div style="align-self: flex-end; margin-bottom: 18px;">
-                            <button class="btn-primary" onclick="searchMaps()" id="btnMapsSearch">🔍 BUSCAR
-                                LEADS</button>
-                        </div>
+                        <input type="text" id="mapsQuery" placeholder="Dentistas em São Paulo" style="flex: 1;">
+                        <button class="btn-primary" onclick="searchMaps()" id="btnMapsSearch" style="width: auto;">🔍
+                            BUSCAR</button>
                     </div>
-
-                    <div id="mapsResultsCount" style="font-size: 13px; color: var(--primary); display: none;">
+                    <div id="mapsResultsCount"
+                        style="font-size: 13px; color: var(--primary); display: none; margin-bottom: 10px;">
                         Encontrados: <strong id="totalMapsLeads">0</strong> leads
                     </div>
-
-                    <div class="maps-results" id="mapsResultsList">
-                        <div style="padding: 40px; text-align: center; color: var(--text-muted);">
-                            Faça uma busca para carregar leads do Google Maps
-                        </div>
-                    </div>
-
+                    <div class="maps-results" id="mapsResultsList"></div>
                     <div class="button-group" style="margin-top: 20px;">
                         <button class="btn-primary" onclick="importLeadsToSender()" id="btnImportLeads" disabled>📥
-                            IMPORTAR SELECIONADOS PARA O DISPARO</button>
+                            IMPORTAR</button>
                         <button class="btn-accent" onclick="exportToExcel(mapsLeads, 'leads_google_maps')">📊 EXPORTAR
                             EXCEL</button>
                     </div>
@@ -911,107 +935,323 @@
             </div>
         </div>
 
-        <!-- Tab 3: Extração Grupos WhatsApp -->
+        <!-- Tab 3: Grupos -->
         <div id="tab-groups" class="tab-pane">
-            <div class="content">
-                <div class="config-section" style="grid-column: span 2;">
-                    <h2>👥 Meus Grupos do WhatsApp</h2>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
-                        Carregue os grupos onde você está e extraia todos os participantes.
-                    </p>
-
-                    <!-- Configuração de API Alternativa -->
-                    <div
-                        style="background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <h3 style="font-size: 14px; margin: 0; color: #ffc107;">⚙️ UazAPI (Fallback Seguro)</h3>
-                            <button onclick="unlockUazConfig()"
-                                style="background: none; border: 1px solid #ffc107; color: #ffc107; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 10px;">🔒
-                                Editar</button>
-                        </div>
-
-                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
-                            Configuração protegida para extração de grupos restritos.
-                        </p>
-
-                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 10px;">
-                            <div>
-                                <label style="font-size: 12px;">URL da UazAPI</label>
-                                <input type="text" id="extractionApiUrl" value="https://prosperazap.uazapi.com" readonly
-                                    style="width: 100%; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: #aaa; border-radius: 5px; font-size: 12px;">
-                            </div>
-                            <!-- Ocultando subdomínio pois não é usado na UazAPI direta -->
-                            <div style="display:none;">
-                                <label style="font-size: 12px;">Subdomínio</label>
-                                <input type="text" id="extractionInstance" value="default" readonly
-                                    style="width: 100%; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: #aaa; border-radius: 5px; font-size: 12px;">
-                            </div>
-                            <div style="grid-column: span 2;">
-                                <label style="font-size: 12px;">Token da Instância</label>
-                                <input type="password" id="extractionApiKey"
-                                    value="440ecac3-306c-4bdd-b14f-3c8e956830cd" readonly
-                                    style="width: 100%; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: #aaa; border-radius: 5px; font-size: 12px;">
-                            </div>
-                        </div>
-
-                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
-                            <input type="checkbox" id="useAlternativeApi" style="width: auto;">
-                            <label for="useAlternativeApi" style="font-size: 12px; margin: 0;">Usar UazAPI para
-                                extração de grupos</label>
-                        </div>
+            <div class="content" style="grid-template-columns: 1fr;">
+                <div class="config-section">
+                    <h2>👥 Grupos WhatsApp</h2>
+                    <button class="btn-primary" onclick="fetchGroups()" style="width: auto; margin-bottom: 20px;">🔄
+                        CARREGAR MEUS GRUPOS</button>
+                    <div id="groupLoading" style="display:none; text-align:center; padding:10px;">⏳ Extraindo
+                        participantes...</div>
+                    <div id="groupsList" class="maps-results"></div>
+                    <div id="groupResultsCount"
+                        style="font-size: 13px; color: var(--primary); display: none; margin: 15px 0 10px 0;">
+                        Extraídos: <strong id="totalGroupLeads">0</strong> membros
                     </div>
-
-                    <button class="btn-primary" onclick="fetchGroups()" style="width: auto; margin-bottom: 20px;">
-                        🔄 CARREGAR MEUS GRUPOS
-                    </button>
-
-                    <div id="groupsList" class="maps-results" style="display: none; max-height: 500px;">
-                        <!-- Lista de Grupos -->
-                    </div>
-
-                    <div id="groupLoading"
-                        style="display: none; text-align: center; padding: 20px; color: var(--primary);">
-                        ⏳ Extraindo contatos do grupo... Aguarde...
+                    <div class="button-group" id="groupButtonGroup" style="margin-top: 10px; display: none;">
+                        <button class="btn-primary" onclick="importGroupLeads()">📥 IMPORTAR PARA DISPARO</button>
+                        <button class="btn-accent" onclick="exportToExcel(groupLeads, 'membros_grupo_whatsapp')">📊
+                            EXPORTAR EXCEL</button>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Tab 4: Instagram -->
+        <div id="tab-insta" class="tab-pane">
+            <div class="content" style="grid-template-columns: 1fr;">
+                <div class="config-section">
+                    <h2>📸 Leads Instagram</h2>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="instaQuery" placeholder="@perfil ou #hashtag" style="flex: 1;">
+                        <button class="btn-primary" onclick="searchInstagram()" id="btnInstaSearch"
+                            style="width: auto;">🔍 BUSCAR</button>
+                    </div>
+                    <div id="instaResults" class="maps-results"></div>
+                    <div class="button-group" style="margin-top: 20px;">
+                        <button class="btn-primary" onclick="importInstaLeads()" id="btnImportInsta">📥
+                            IMPORTAR</button>
+                        <button class="btn-accent" onclick="exportToExcel(instaLeads, 'leads_instagram')">📊
+                            EXCEL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Tab 5: Admin -->
+        <div id="tab-admin" class="tab-pane">
+            <div class="content" style="grid-template-columns: 1fr; position: relative; padding: 0;">
+
+                <div id="adminLoginOverlay" class="login-overlay">
+                    <div class="login-box">
+                        <h3 style="color: #ffc107; margin-bottom: 10px;">🔐 Área do Administrador</h3>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 20px;">Acesso restrito.</p>
+                        <input type="password" id="passAdmin" placeholder="Senha Master" style="margin-bottom: 12px;">
+                        <button class="btn-primary" onclick="checkAdminLogin()"
+                            style="background: #ffc107; color: #000; width: 100%;">LIBERAR</button>
+                    </div>
+                </div>
+
+                <div class="config-section" style="margin: 30px;">
+                    <h2 style="color: #ffc107;">⚙️ Configurações Evolution API</h2>
+
+                    <div class="form-group">
+                        <label>Webhook Principal</label>
+                        <input type="text" id="n8nWebhook"
+                            value="https://n8n.naturalisterravida.com.br/webhook/disparo-whatsapp">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>API Key Evolution</label>
+                            <input type="text" id="apiKey" value="f98fed17beccac0149db6cfe6bfb7fff">
+                        </div>
+                        <div class="form-group">
+                            <label>Instância Ativa</label>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="text" id="instanceName" value="assessor_prosperazap"
+                                    onchange="document.getElementById('activeInstanceName').textContent = this.value">
+                                <button onclick="generateNewInstance()"
+                                    style="padding: 0; width: 45px; min-width: 45px; height: 45px; font-size: 18px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: white;">🔄</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>URL Evolution API</label>
+                        <input type="text" id="evolutionUrl" value="https://evolution.naturalisterravida.com.br"
+                            placeholder="https://sua-api.com">
+                        <p style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">URL base da sua Evolution
+                            API (sem / no final).</p>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>Webhook Instagram</label>
+                        <input type="text" id="instaWebhook" placeholder="URL do n8n">
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 30px 0;">
+
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Modelo de IA</label>
+                        <select id="geminiModel"
+                            style="width: 100%; padding: 12px 14px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 12px; font-size: 14px; color: white;">
+                            <option value="gemini-flash-latest" selected>Gemini Flash (Versão Estável Recomendada)
+                            </option>
+                            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Alta Performance)</option>
+                            <option value="gemini-pro-latest">Gemini Pro (Versão Inteligente)</option>
+                        </select>
+                        <p style="font-size: 10px; color: #ffeb3b; margin-top: 6px;">⚠️ Se usar o Pro, use delays acima
+                            de 40 segundos.</p>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <button class="btn-accent" onclick="testGeminiKey()"
+                            style="width: 100%; background: #4285f4; color: white;">🔍 TESTAR CHAVE GEMINI</button>
+                    </div>
+                    <label>Google Gemini API Key (Para Agente de Variedade)</label>
+                    <input type="password" id="geminiKey" placeholder="Cole sua chave do Google AI Studio aqui">
+                    <p style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Pegue sua chave grátis
+                        em: <a href="https://aistudio.google.com/app/apikey" target="_blank"
+                            style="color: #4285f4;">Google AI Studio</a></p>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 30px 0;">
+
+                <h2 style="color: #ffc107;">🛡️ Configurações UazAPI</h2>
+                <div class="form-group">
+                    <label>URL UazAPI</label>
+                    <input type="text" id="extractionApiUrl" value="https://prosperazap.uazapi.com">
+                </div>
+                <div class="form-group">
+                    <label>Token UazAPI</label>
+                    <input type="text" id="extractionApiKey" value="440ecac3-306c-4bdd-b14f-3c8e956830cd">
+                </div>
+                <input type="hidden" id="extractionInstance" value="default">
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="useAlternativeApi" style="width: auto;">
+                    <span style="font-size: 12px;">Usar UazAPI por padrão</span>
+                </label>
+
+                <button class="btn-primary" onclick="saveConfig()"
+                    style="margin-top: 30px; width: 100%; background: #25D366; color: #000; font-weight: bold;">💾
+                    SALVAR CONFIGURAÇÕES</button>
+            </div>
+        </div>
     </div>
+    </div> <!-- container -->
 
     <div class="status-toast" id="statusToast"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script>
         let contatosData = [];
         let base64Media = null;
         let mediaFileName = null;
         let mediaMimeType = null;
+        let mapsLeads = [];
+        let instaLeads = [];
+        let groupLeads = [];
+        let statusInterval = null;
+        let EVOLUTION_URL = 'https://evolution.naturalisterravida.com.br';
 
-        // Carregar configurações salvas
+        // Initialize
         window.addEventListener('load', () => {
             const savedWebhook = localStorage.getItem('mg_webhook');
             const savedKey = localStorage.getItem('mg_apikey');
             const savedInstance = localStorage.getItem('mg_instance');
             const savedInstaWebhook = localStorage.getItem('mg_insta_webhook');
+            const savedUazUrl = localStorage.getItem('mg_uaz_url');
+            const savedUazToken = localStorage.getItem('mg_uaz_token');
+            const savedUseUaz = localStorage.getItem('mg_use_uaz') === 'true';
+            const savedGeminiKey = localStorage.getItem('mg_gemini_key');
+            const savedAiPrompt = localStorage.getItem('mg_ai_prompt');
+            const savedUseAI = localStorage.getItem('mg_use_ai') === 'true';
+            const savedEvUrl = localStorage.getItem('mg_ev_url');
 
             if (savedWebhook) document.getElementById('n8nWebhook').value = savedWebhook;
             if (savedKey) document.getElementById('apiKey').value = savedKey;
             if (savedInstaWebhook) document.getElementById('instaWebhook').value = savedInstaWebhook;
+            if (savedUazUrl) document.getElementById('extractionApiUrl').value = savedUazUrl;
+            if (savedUazToken) document.getElementById('extractionApiKey').value = savedUazToken;
+            if (savedGeminiKey) document.getElementById('geminiKey').value = savedGeminiKey;
+            if (localStorage.getItem('mg_gemini_model')) document.getElementById('geminiModel').value = localStorage.getItem('mg_gemini_model');
+            if (savedEvUrl) {
+                document.getElementById('evolutionUrl').value = savedEvUrl;
+                EVOLUTION_URL = savedEvUrl;
+            }
+            if (savedAiPrompt) document.getElementById('aiPrompt').value = savedAiPrompt;
+            if (savedUseAI) {
+                document.getElementById('useAI').checked = true;
+                document.getElementById('aiOptions').style.display = 'block';
+            }
+            if (document.getElementById('useAlternativeApi')) document.getElementById('useAlternativeApi').checked = savedUseUaz;
 
             if (savedInstance) {
                 document.getElementById('instanceName').value = savedInstance;
                 updateConnectionUI(savedInstance);
                 checkInstanceStatus(savedInstance);
             }
+
+            // FILE HANDLERS
+            document.getElementById('excelFile').addEventListener('change', handleExcelUpload);
+            document.getElementById('mediaFile').addEventListener('change', handleMediaUpload);
         });
 
+        function handleExcelUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('fileNameDisplay').textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const bstr = evt.target.result;
+                const wb = XLSX.read(bstr, { type: 'binary' });
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
+                const data = XLSX.utils.sheet_to_json(ws);
+
+                if (data.length > 0) {
+                    const keys = Object.keys(data[0]);
+                    contatosData = data.map(row => {
+                        let phone = "";
+                        // Find any key that looks like phone
+                        keys.forEach(k => {
+                            if (k.toLowerCase().includes('tel') || k.toLowerCase().includes('cel') || k.toLowerCase().includes('zap') || k.toLowerCase().includes('fone')) {
+                                phone = String(row[k]).replace(/\D/g, "");
+                            }
+                        });
+
+                        // Find any key that looks like name
+                        let name = row['Nome'] || row['nome'] || row['Name'] || "Cliente";
+
+                        return {
+                            ...row,
+                            _telefone_limpo: phone,
+                            _nome_exibicao: name
+                        };
+                    });
+
+                    // Dynamic Variable Tips
+                    const variableTips = document.getElementById('variableTips');
+                    variableTips.innerHTML = keys.map(k => `<span class="variable-pill" onclick="insertVar('{${k}}')">{${k}}</span>`).join('');
+
+                    mostrarPreview();
+                    showToast(`${contatosData.length} contatos carregados!`);
+                }
+            };
+            reader.readAsBinaryString(file);
+        }
+
+        function handleMediaUpload(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                base64Media = null;
+                mediaFileName = null;
+                mediaMimeType = null;
+                document.getElementById('mediaNameDisplay').textContent = "Clique para anexar arquivo";
+                return;
+            }
+            document.getElementById('mediaNameDisplay').textContent = file.name;
+            mediaFileName = file.name;
+            mediaMimeType = file.type;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                base64Media = evt.target.result.split(',')[1];
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const pane = document.getElementById(`tab-${tab}`);
+            const btn = document.getElementById(`btn-tab-${tab}`);
+            if (pane) pane.classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        function checkAdminLogin() {
+            const pass = document.getElementById('passAdmin').value;
+            if (pass === '212003') {
+                document.getElementById('adminLoginOverlay').classList.add('hidden');
+                showToast('Acesso Liberado!');
+            } else {
+                showToast('Senha incorreta.', 'error');
+            }
+        }
+
+        function saveConfig() {
+            localStorage.setItem('mg_webhook', document.getElementById('n8nWebhook').value.trim());
+            localStorage.setItem('mg_apikey', document.getElementById('apiKey').value.trim());
+            localStorage.setItem('mg_instance', document.getElementById('instanceName').value.trim());
+            localStorage.setItem('mg_insta_webhook', document.getElementById('instaWebhook').value.trim());
+            localStorage.setItem('mg_uaz_url', document.getElementById('extractionApiUrl').value.trim());
+            localStorage.setItem('mg_uaz_token', document.getElementById('extractionApiKey').value.trim());
+            localStorage.setItem('mg_use_uaz', document.getElementById('useAlternativeApi').checked);
+            localStorage.setItem('mg_gemini_key', document.getElementById('geminiKey').value.trim());
+            localStorage.setItem('mg_ai_prompt', document.getElementById('aiPrompt').value.trim());
+            localStorage.setItem('mg_use_ai', document.getElementById('useAI').checked);
+            localStorage.setItem('mg_gemini_model', document.getElementById('geminiModel').value.trim());
+            localStorage.setItem('mg_ev_url', document.getElementById('evolutionUrl').value.trim());
+            EVOLUTION_URL = document.getElementById('evolutionUrl').value.trim();
+            showToast("Configurações salvas e limpas!");
+        }
+
+        // Toggle IA Options
+        document.getElementById('useAI').addEventListener('change', function () {
+            document.getElementById('aiOptions').style.display = this.checked ? 'block' : 'none';
+        });
+
+        function generateNewInstance() {
+            const newName = "mg_" + Math.random().toString(36).substring(2, 7);
+            document.getElementById('instanceName').value = newName;
+            document.getElementById('activeInstanceName').textContent = newName;
+            showToast("Nova instância: " + newName);
+        }
+
         function updateConnectionUI(instance) {
-            document.getElementById('instanceDisplay').style.display = 'block';
-            document.getElementById('instanceDisplay').querySelector('span').textContent = instance;
-            document.getElementById('btnConnect').textContent = "🔄 RECONECTAR / TROCAR";
+            document.getElementById('activeInstanceName').textContent = instance;
         }
 
         async function checkInstanceStatus(instance) {
@@ -1022,164 +1262,11 @@
                 });
                 const data = await res.json();
                 const badge = document.getElementById('statusBadge');
-
                 if (data.instance && data.instance.state === "open") {
                     badge.innerHTML = "🟢 WHATSAPP CONECTADO";
-                    badge.style.background = "rgba(37, 211, 102, 0.1)";
                     badge.style.color = "var(--primary)";
-                    badge.style.borderColor = "rgba(37, 211, 102, 0.2)";
                 }
-            } catch (e) { console.log("Erro status:", e); }
-        }
-
-        function saveConfig() {
-            localStorage.setItem('mg_webhook', document.getElementById('n8nWebhook').value);
-            localStorage.setItem('mg_apikey', document.getElementById('apiKey').value);
-            localStorage.setItem('mg_instance', document.getElementById('instanceName').value);
-        }
-
-        // Lógica de Login
-        function checkLogin() {
-            const pass = document.getElementById('passLogin').value;
-
-            if (pass === 'magnogomes') {
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('configSectionUser').classList.add('unlocked');
-                showToast('Acesso à Conexão liberado!');
-            } else {
-                showToast('Senha de Acesso incorreta.', 'error');
-            }
-        }
-
-        function unlockMasterData() {
-            const pass = document.getElementById('passMaster').value;
-
-            if (pass === '212003') {
-                document.getElementById('masterOverlay').classList.add('hidden');
-                document.getElementById('configSectionMaster').classList.add('unlocked');
-                showToast('API Key Master liberada!');
-            } else {
-                showToast('Senha Master incorreta!', 'error');
-            }
-        }
-
-        // Contador e Auto-resize
-        document.getElementById('message').addEventListener('input', function () {
-            document.getElementById('charCount').textContent = this.value.length;
-        });
-
-        function insertVar(v) {
-            const area = document.getElementById('message');
-            area.value += v;
-            area.focus();
-        }
-
-        // Validação e Limpeza de Telefone
-        function limparTelefone(tel) {
-            if (!tel) return "";
-            // Remove tudo que não é número
-            let clean = String(tel).replace(/\D/g, "");
-
-            // Se o número não começar com 55 e tiver 10 ou 11 dígitos, adiciona 55
-            if (clean.length >= 10 && clean.length <= 11 && !clean.startsWith("55")) {
-                clean = "55" + clean;
-            }
-
-            return clean;
-        }
-
-        // Processar Excel com Multi-Variáveis
-        document.getElementById('excelFile').addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            document.getElementById('fileNameDisplay').textContent = file.name;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-
-                    if (jsonData.length > 0) {
-                        // Detectar colunas para variáveis
-                        const columns = Object.keys(jsonData[0]);
-                        const tips = document.getElementById('variableTips');
-                        tips.innerHTML = columns
-                            .filter(c => !c.toLowerCase().includes('telefone'))
-                            .map(c => `<span class="variable-pill" onclick="insertVar('{${c}}')">{${c}}</span>`)
-                            .join('');
-
-                        contatosData = jsonData.map(row => {
-                            // Encontrar coluna de telefone de forma inteligente
-                            const telKey = columns.find(c => {
-                                const lower = c.toLowerCase();
-                                return lower.includes('tel') || lower.includes('cel') || lower.includes('fone') || lower.includes('whats') || lower.includes('number');
-                            }) || columns[0];
-
-                            // Encontrar coluna de nome de forma inteligente
-                            const nomeKey = columns.find(c => {
-                                const lower = c.toLowerCase();
-                                return lower.includes('nome') || lower.includes('name') || lower.includes('lead') || lower.includes('cliente') || lower.includes('contato');
-                            });
-
-                            const phone = limparTelefone(row[telKey]);
-                            const nomeEncontrado = nomeKey ? row[nomeKey] : null;
-
-                            return { ...row, _telefone_limpo: phone, _nome_exibicao: nomeEncontrado };
-                        }).filter(c => c._telefone_limpo);
-
-                        mostrarPreview();
-                        showToast(`Sucesso: ${contatosData.length} contatos carregados.`);
-                    }
-                } catch (error) {
-                    showToast('Erro ao processar Excel: ' + error.message, 'error');
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        });
-
-        // Conversão de Mídia para Base64
-        document.getElementById('mediaFile').addEventListener('change', async function (e) {
-            const file = e.target.files[0];
-            if (!file) {
-                base64Media = null;
-                return;
-            }
-            document.getElementById('mediaNameDisplay').textContent = file.name;
-            mediaFileName = file.name;
-            mediaMimeType = file.type;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const fullBase64 = e.target.result;
-                base64Media = fullBase64.split(',')[1];
-            };
-            reader.readAsDataURL(file);
-        });
-
-        function mostrarPreview() {
-            if (contatosData.length === 0) return;
-            const previewSection = document.getElementById('previewSection');
-            previewSection.style.display = 'block';
-            document.getElementById('totalContacts').textContent = contatosData.length;
-
-            const previewList = document.getElementById('previewList');
-            previewList.innerHTML = contatosData.map((c, i) => `
-                <div class="preview-item">
-                    <input type="checkbox" class="contact-checkbox" data-index="${i}" checked>
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-weight: 600;">${c._nome_exibicao || 'Sem Nome'}</span>
-                        <span style="font-size: 11px; opacity: 0.7;">+${c._telefone_limpo}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function toggleSelectAll() {
-            const state = document.getElementById('selectAll').checked;
-            document.querySelectorAll('.contact-checkbox').forEach(cb => cb.checked = state);
+            } catch (e) { }
         }
 
         function showToast(msg, type = 'success') {
@@ -1190,1071 +1277,687 @@
             setTimeout(() => { toast.style.display = 'none'; }, 4000);
         }
 
-        async function iniciarDisparo() {
-            const webhookUrl = document.getElementById('n8nWebhook').value.trim();
-            const msgTemplate = document.getElementById('message').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const instanceName = document.getElementById('instanceName').value.trim();
-            const msgDelay = document.getElementById('msgDelay').value || 3;
-            const selectedBoxes = Array.from(document.querySelectorAll('.contact-checkbox:checked'));
-            const isAudio = document.getElementById('isAudio').checked;
-
-            if (!webhookUrl || !msgTemplate || selectedBoxes.length === 0) {
-                showToast('Preencha os campos obrigatórios e selecione contatos.', 'error');
-                return;
-            }
-
-            saveConfig(); // Salva as chaves antes de enviar
-
-            const btn = document.getElementById('btnSend');
-            btn.disabled = true;
-            document.getElementById('progressContainer').style.display = 'block';
-
-            const total = selectedBoxes.length;
-            let count = 0;
-            let erros = 0;
-
-            // DELAY DE 10 SEGUNDOS ENTRE CADA LEAD
-            const DELAY_ENTRE_ENVIOS = 10000; // 10 segundos em milissegundos
-
-            // Função auxiliar para aguardar
-            const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-            for (const box of selectedBoxes) {
-                const index = box.dataset.index;
-                const contato = contatosData[index];
-
-                let mensagemFinal = msgTemplate;
-                Object.keys(contato).forEach(key => {
-                    // Usa split/join para substituir todas as ocorrências de forma segura (sem Regex)
-                    // Isso evita o erro "Nothing to repeat" se a chave for numérica
-                    const variavel = `{${key}}`;
-                    mensagemFinal = mensagemFinal.split(variavel).join(contato[key]);
-                });
-
-                const payload = {
-                    number: contato._telefone_limpo,
-                    telefone: contato._telefone_limpo, // Adicionado para compatibilidade com n8n antigo
-                    message: mensagemFinal,
-                    media: base64Media,
-                    mediaName: mediaFileName,
-                    mimeType: mediaMimeType,
-                    isAudio: isAudio,
-                    apiKey: apiKey,
-                    instance: instanceName,
-                    delay: msgDelay,
-                    contatoInfo: contato
-                };
-
-                try {
-                    // Adiciona timeout de 30 segundos para o fetch
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-                    const response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
-                        signal: controller.signal
-                    });
-
-                    clearTimeout(timeoutId);
-
-                    if (!response.ok) {
-                        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
-                    }
-
-                    count++;
-                    updateProgress(count, total);
-                    console.log(`[SUCESSO] Contato ${index}: Enviado com sucesso.`);
-                } catch (e) {
-                    console.error(`[ERRO] Falha ao enviar para ${contato._telefone_limpo}:`, e);
-                    erros++;
-
-                    // Atualiza status visualmente para usuário saber que houve erro neste item (opcional, se tivesse lista detalhada)
-                    showToast(`Erro no envio para ${contato._nome_exibicao || contato._telefone_limpo}: ${e.message}`, 'error');
-                }
-
-                // AGUARDA 10 SEGUNDOS ANTES DO PRÓXIMO ENVIO (exceto no último)
-                if (count + erros < total) {
-                    // Mostra contagem regressiva no status do progresso
-                    for (let seg = 10; seg > 0; seg--) {
-                        document.getElementById('progressStatus').textContent = `⏳ Aguardando ${seg}s antes do próximo envio... (${count}/${total})`;
-                        await delay(1000);
-                    }
-                }
-            }
-
-            if (erros === 0) {
-                showToast(`✅ Disparo Finalizado! ${count} enviados com sucesso.`);
-            } else {
-                showToast(`⚠️ Disparo concluído: ${count} enviados, ${erros} erros.`, 'error');
-            }
-            btn.disabled = false;
-        }
-
-        function updateProgress(curr, tot) {
-            const p = (curr / tot) * 100;
-            document.getElementById('progressFill').style.width = p + '%';
-            document.getElementById('progressPercent').textContent = Math.round(p) + '%';
-            document.getElementById('progressStatus').textContent = `Enviando ${curr} de ${tot}...`;
-        }
-
-        function limparFormulario() {
-            if (confirm("Deseja realmente limpar tudo?")) {
-                location.reload();
-            }
-        }
-
-        function agendarDisparo() {
-            const date = document.getElementById('scheduleDate').value;
-            const time = document.getElementById('scheduleTime').value;
-            if (!date || !time) {
-                showToast("Selecione data e hora para agendar.", "error");
-                return;
-            }
-            showToast(`Agendado com sucesso para ${date} às ${time}! (Mantenha esta aba aberta)`);
-
-            const targetTime = new Date(`${date}T${time}`).getTime();
-            const check = setInterval(() => {
-                if (Date.now() >= targetTime) {
-                    clearInterval(check);
-                    iniciarDisparo();
-                }
-            }, 30000);
-        }
-
-        // --- QR CODE & CONNECTION LOGIC ---
-        let statusInterval = null;
-        const EVOLUTION_URL = 'https://evolution.naturaisterravida.com.br';
-
+        // WhatsApp Connection
+        // WhatsApp Connection
         async function startQRConnection() {
-            let instance = document.getElementById('instanceName').value;
-            const apiKey = document.getElementById('apiKey').value;
+            let instance = document.getElementById('instanceName').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const evolutionUrl = (document.getElementById('evolutionUrl')?.value || EVOLUTION_URL).trim();
 
-            // Se não tiver instância, gera uma aleatória automática
+            if (!apiKey) {
+                showToast("Erro: Chave API no Painel Admin está vazia!", "error");
+                switchTab('admin');
+                return;
+            }
+
             if (!instance) {
                 instance = 'mg_' + Math.random().toString(36).substring(2, 9);
                 document.getElementById('instanceName').value = instance;
-                saveConfig();
             }
 
-            if (!apiKey) return showToast("Chave API master não configurada.", "error");
-
             document.getElementById('qrModal').style.display = 'flex';
-            document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 12px; text-align: center;">Configurando instância...</div>';
-            document.getElementById('connectionStatus').textContent = "⏳ Preparando servidor...";
+            const qrContainer = document.getElementById('qrContainer');
+            qrContainer.innerHTML = '<div style="color: #000; font-size: 14px;">Iniciando conexão...</div>';
 
             try {
-                // 1. Tentar criar instância (ignoramos erros de 'já existe')
-                const createRes = await fetch(`${EVOLUTION_URL}/instance/create`, {
+                // 1. Tenta criar a instância (ignora se der erro pois pode já existir)
+                console.log("Tentando criar/verificar instância:", instance);
+                await fetch(`${evolutionUrl}/instance/create`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'apikey': apiKey },
                     body: JSON.stringify({
                         instanceName: instance,
-                        token: apiKey,
                         qrcode: true,
                         integration: 'WHATSAPP-BAILEYS'
                     })
                 });
 
-                // Pequeno delay para o servidor processar a criação
-                await new Promise(r => setTimeout(r, 2000));
-
-                // 2. Buscar o QR Code
-                const response = await fetch(`${EVOLUTION_URL}/instance/connect/${instance}`, {
+                // 2. Tenta buscar o QR Code independente da resposta do 'create'
+                qrContainer.innerHTML = '<div style="color: #000; font-size: 14px;">Buscando QR Code...</div>';
+                const res = await fetch(`${evolutionUrl}/instance/connect/${instance}`, {
                     headers: { 'apikey': apiKey }
                 });
-                const data = await response.json();
+
+                const data = await res.json();
 
                 if (data.base64) {
-                    document.getElementById('qrContainer').innerHTML = `<img src="${data.base64}" alt="QR Code" style="width: 100%; height: 100%; object-fit: contain;">`;
-                    document.getElementById('connectionStatus').textContent = "📸 Escaneie o código acima";
+                    qrContainer.innerHTML = `<img src="${data.base64}" style="width:100%; border-radius: 8px;">`;
                     startStatusPolling(instance, apiKey);
-                } else if (data.status === "open" || (data.instance && data.instance.state === "open")) {
-                    document.getElementById('qrContainer').innerHTML = '<div style="color: #000; font-size: 40px; display: flex; align-items: center; justify-content: center; height: 100%;">✅</div>';
-                    document.getElementById('connectionStatus').textContent = "✅ WhatsApp já conectado!";
-                    updateConnectionUI(instance);
+                } else if (data.instance?.state === "open" || data.status === "open") {
+                    qrContainer.innerHTML = '<div style="color: #25D366; font-size: 60px;">✅</div><div style="color: #000; margin-top: 10px; font-weight: 600;">WHATSAPP CONECTADO!</div>';
+                    setTimeout(closeQRModal, 2500);
                     checkInstanceStatus(instance);
-                    setTimeout(closeQRModal, 2000);
+                    showToast("Já está conectado!");
                 } else {
-                    console.error("Erro detalhado da API:", data);
-                    const errorMsg = data.message || data.error || data.msg || "Erro desconhecido no servidor";
-                    document.getElementById('qrContainer').innerHTML = `<div style="color: #000; font-size: 11px; padding: 20px; word-break: break-all;">O servidor não retornou o QR Code.<br><br><b>Mensagem:</b> ${errorMsg}<br><br><b>Dica:</b> Tente um nome diferente de instância ou verifique se a API Key Master está correta.</div>`;
-                    document.getElementById('connectionStatus').textContent = "⚠️ Erro na Resposta";
+                    if (res.status === 403 || res.status === 401) {
+                        qrContainer.innerHTML = '<div style="color: #ef4444; padding: 20px; font-size: 14px;"><b>Erro 403: Acesso Negado</b><br>Sua API Key está incorreta no Admin ou a instância foi bloqueada.</div>';
+                        showToast("Erro de API Key", "error");
+                    } else {
+                        qrContainer.innerHTML = `<div style="color: #000; font-size: 12px; padding: 10px;">Erro: ${data.message || 'Servidor não enviou o QR Code'}</div>`;
+                    }
                 }
-
-            } catch (err) {
-                console.error("Erro na conexão:", err);
-                document.getElementById('qrContainer').innerHTML = `<div style="color: #000; font-size: 11px; padding: 20px;">Falha na rede ou servidor offline.<br><br>${err.message}</div>`;
-                document.getElementById('connectionStatus').textContent = "❌ Falha de Rede";
+            } catch (e) {
+                console.error("Erro Conexão:", e);
+                qrContainer.innerHTML = `<div style="color: #ef4444; font-size: 12px; padding: 10px;">Erro de Rede: Verifique a URL da API no Admin.</div>`;
+                showToast("Falha de rede com a API", "error");
             }
         }
 
         function startStatusPolling(instance, apiKey) {
             if (statusInterval) clearInterval(statusInterval);
             statusInterval = setInterval(async () => {
-                try {
-                    const res = await fetch(`${EVOLUTION_URL}/instance/connectionState/${instance}`, {
-                        headers: { 'apikey': apiKey }
-                    });
-                    const data = await res.json();
-
-                    if (data.instance.state === "open") {
-                        clearInterval(statusInterval);
-                        document.getElementById('connectionStatus').textContent = "✅ CONECTADO!";
-                        document.getElementById('connectionStatus').style.color = "var(--primary)";
-                        showToast("WhatsApp pareado com sucesso!");
-                        updateConnectionUI(instance);
-                        checkInstanceStatus(instance);
-                        setTimeout(closeQRModal, 2000);
-                    }
-                } catch (e) {
-                    console.error("Erro no polling:", e);
+                const res = await fetch(`${EVOLUTION_URL}/instance/connectionState/${instance}`, { headers: { 'apikey': apiKey } });
+                const data = await res.json();
+                if (data.instance.state === "open") {
+                    clearInterval(statusInterval);
+                    closeQRModal();
+                    checkInstanceStatus(instance);
+                    showToast("Conectado!");
                 }
             }, 3000);
         }
 
-        function closeQRModal() {
-            document.getElementById('qrModal').style.display = 'none';
-            if (statusInterval) clearInterval(statusInterval);
+        function closeQRModal() { document.getElementById('qrModal').style.display = 'none'; clearInterval(statusInterval); }
+
+        // GOOGLE MAPS EXTRACTION
+        let mapService;
+        function initAutocomplete() {
+            console.log("Maps API Carregada");
+            const mapDiv = document.createElement('div');
+            mapDiv.id = "hiddenMapDiv";
+            mapDiv.style.display = "none";
+            document.body.appendChild(mapDiv);
+            mapService = new google.maps.places.PlacesService(mapDiv);
         }
 
-        // Global processContacts function to be used by all tabs
-        function processContacts(data) {
-            contatosData = data; // Atualiza a variável global
-            document.getElementById('previewList').innerHTML = '';
+        async function searchMaps() {
+            const query = document.getElementById('mapsQuery').value;
+            if (!query) return showToast("Digite o que buscar.", "error");
 
-            // Se vazio
-            if (data.length === 0) return;
-
-            // Detectar colunas para variáveis (mesma lógica do excel)
-            const columns = Object.keys(data[0]);
-            const tips = document.getElementById('variableTips');
-            // Apenas recria as dicas se elas não existirem ou se for uma nova importação diferente
-            if (tips) {
-                tips.innerHTML = columns
-                    .filter(c => !c.toLowerCase().includes('telefone') && !c.startsWith('_'))
-                    .map(c => `<span class="variable-pill" onclick="insertVar('{${c}}')">{${c}}</span>`)
-                    .join('');
+            if (!mapService) {
+                showToast("Erro: Google Maps não carregado.", "error");
+                return;
             }
 
-            // Renderiza a lista
-            const previewList = document.getElementById('previewList');
-            previewList.innerHTML = contatosData.map((c, i) => `
-                <div class="preview-item">
-                    <input type="checkbox" class="contact-checkbox" data-index="${i}" checked>
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-weight: 600;">${c._nome_exibicao || c.Nome || 'Sem Nome'}</span>
-                        <span style="font-size: 11px; opacity: 0.7;">+${c._telefone_limpo}</span>
+            const btn = document.getElementById('btnMapsSearch');
+            btn.disabled = true;
+            btn.textContent = "⌛ BUSCANDO...";
+
+            let allResults = [];
+            mapsLeads = []; // Limpa leads anteriores
+
+            function processResults(results, status, pagination) {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                    allResults = allResults.concat(results);
+
+                    if (pagination && pagination.hasNextPage) {
+                        showToast(`Página 1 concluída, buscando mais... (${allResults.length} locais)`);
+                        // O Google exige um delay de ~2s antes de permitir a próxima página
+                        setTimeout(() => pagination.nextPage(), 2000);
+                    } else {
+                        // Fim das páginas, agora busca detalhes (telefones)
+                        fetchDetailedLeads(allResults);
+                    }
+                } else {
+                    if (allResults.length > 0) fetchDetailedLeads(allResults);
+                    else {
+                        showToast("Nenhum resultado encontrado.", "error");
+                        btn.disabled = false;
+                        btn.textContent = "🔍 BUSCAR";
+                    }
+                }
+            }
+
+            async function fetchDetailedLeads(results) {
+                showToast(`Buscando detalhes/telefones de ${results.length} locais...`);
+                const detailedLeads = [];
+
+                for (let i = 0; i < results.length; i++) {
+                    const place = results[i];
+                    await new Promise(resolve => {
+                        mapService.getDetails({
+                            placeId: place.place_id,
+                            fields: ['name', 'formatted_phone_number', 'formatted_address']
+                        }, (details, detailStatus) => {
+                            if (detailStatus === google.maps.places.PlacesServiceStatus.OK && details) {
+                                const tel = details.formatted_phone_number || "";
+                                detailedLeads.push({
+                                    'Nome': details.name,
+                                    'Telefone': tel || "Telefone não disponível",
+                                    'Endereço': details.formatted_address || "Endereço não disponível",
+                                    '_telefone_limpo': tel.replace(/\D/g, ""),
+                                    '_nome_exibicao': details.name
+                                });
+                            }
+                            setTimeout(resolve, 250); // Delay suave para não travar API
+                        });
+                    });
+
+                    // Atualiza status a cada 5 detalhes
+                    if (i % 5 === 0) {
+                        document.getElementById('totalMapsLeads').textContent = detailedLeads.length;
+                    }
+                }
+
+                mapsLeads = detailedLeads;
+                const comFone = mapsLeads.filter(l => l._telefone_limpo.length > 5).length;
+
+                showToast(`${comFone} leads com telefone carregados!`);
+                renderMapsResults();
+                document.getElementById('mapsResultsCount').style.display = 'block';
+                document.getElementById('totalMapsLeads').textContent = mapsLeads.length;
+                document.getElementById('btnImportLeads').disabled = mapsLeads.length === 0;
+
+                btn.disabled = false;
+                btn.textContent = "🔍 BUSCAR";
+            }
+
+            // Inicia a primeira chamada
+            mapService.textSearch({ query: query }, processResults);
+        }
+
+        function renderMapsResults() {
+            const list = document.getElementById('mapsResultsList');
+            list.innerHTML = mapsLeads.map(l => `
+                <div class="maps-item">
+                    <div class="maps-info">
+                        <h4>${l.Nome}</h4>
+                        <p>${l.Telefone} | ${l.Endereço}</p>
                     </div>
                 </div>
             `).join('');
-
-            mostrarPreview();
         }
 
-        // --- WHATSAPP GROUPS LOGIC ---
+        function importLeadsToSender() {
+            if (mapsLeads.length === 0) return;
+            contatosData = [...contatosData, ...mapsLeads];
+            mostrarPreview();
+            switchTab('sender');
+            showToast(`${mapsLeads.length} leads importados!`);
+        }
 
-        // Função auxiliar para obter configurações da API de extração
-        function getExtractionApiConfig() {
-            const checkbox = document.getElementById('useAlternativeApi');
-            const useAlternative = checkbox.checked;
+        // INSTAGRAM EXTRACTION
+        async function searchInstagram() {
+            const webhook = localStorage.getItem('mg_insta_webhook');
+            const query = document.getElementById('instaQuery').value;
+            if (!webhook || !query) return showToast("Configure o webhook e digite o perfil.", "error");
 
-            console.log("=== VERIFICAÇÃO DE CONFIGURAÇÃO ===");
-            console.log("Checkbox UazAPI está marcado?", useAlternative);
+            const btn = document.getElementById('btnInstaSearch');
+            btn.disabled = true;
+            btn.textContent = "⌛ BUSCANDO...";
 
-            if (useAlternative) {
-                const url = document.getElementById('extractionApiUrl').value;
-                const instance = document.getElementById('extractionInstance').value || 'default';
-                const token = document.getElementById('extractionApiKey').value;
+            try {
+                const res = await fetch(webhook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+                const data = await res.json();
+                // Assume o n8n retorna uma lista de perfis/leads
+                instaLeads = data.map(i => ({
+                    'Nome': i.full_name || i.username,
+                    'Telefone': i.whatsapp || i.phone,
+                    'Username': i.username,
+                    '_telefone_limpo': (i.whatsapp || i.phone || "").replace(/\D/g, ""),
+                    '_nome_exibicao': i.full_name || i.username
+                })).filter(l => l._telefone_limpo.length > 5);
 
-                if (!url || !token) {
-                    showToast("Configure a URL e o Token da UazAPI!", "error");
-                    return null;
-                }
-
-                return {
-                    url: url.replace(/\/$/, ''), // Remove barra final se houver
-                    instance,
-                    token: token,  // UazAPI usa 'token' no header
-                    isUazApi: true,
-                    headerName: 'token'  // Nome do header
-                };
-            } else {
-                const instance = document.getElementById('instanceName').value;
-                const apiKey = document.getElementById('apiKey').value;
-
-                if (!instance || !apiKey) {
-                    showToast("Conecte seu WhatsApp primeiro na aba de Disparo.", "error");
-                    return null;
-                }
-
-                return {
-                    url: EVOLUTION_URL,
-                    instance,
-                    token: apiKey,  // Evolution usa 'apikey' mas armazenamos como token
-                    isUazApi: false,
-                    headerName: 'apikey'  // Nome do header
-                };
+                renderInstaResults();
+            } catch (e) { showToast("Erro ao buscar no Instagram.", "error"); }
+            finally {
+                btn.disabled = false;
+                btn.textContent = "🔍 BUSCAR";
             }
+        }
+
+        function renderInstaResults() {
+            const list = document.getElementById('instaResults');
+            list.innerHTML = instaLeads.map(l => `
+                <div class="maps-item">
+                    <div class="maps-info"><h4>${l.Nome}</h4><p>${l.Telefone} (@${l.Username})</p></div>
+                </div>
+            `).join('');
+        }
+
+        function importInstaLeads() {
+            if (instaLeads.length === 0) return;
+            contatosData = [...contatosData, ...instaLeads];
+            mostrarPreview();
+            switchTab('sender');
+        }
+
+        // EXPORT EXCEL
+        function exportToExcel(data, filename) {
+            if (data.length === 0) return showToast("Sem dados para exportar.", "error");
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
+            XLSX.writeFile(workbook, `${filename}_${new Date().getTime()}.xlsx`);
+            showToast("Exportação concluída!");
         }
 
         async function fetchGroups() {
-            const config = getExtractionApiConfig();
-            if (!config) return;
+            const inst = document.getElementById('instanceName').value;
+            const key = document.getElementById('apiKey').value;
+            const list = document.getElementById('groupsList');
+            list.innerHTML = 'Buscando grupos...';
 
-            document.getElementById('groupsList').style.display = 'block';
-            document.getElementById('groupsList').innerHTML = '<div style="padding:20px; text-align:center;">⏳ Buscando grupos...</div>';
+            // Diferentes versões da API podem usar nomes variados para listar grupos
+            const endpoints = [
+                `${EVOLUTION_URL}/group/fetchAllGroups/${inst}?getParticipants=false`,
+                `${EVOLUTION_URL}/group/findAllGroups/${inst}?getParticipants=false`
+            ];
+
+            let data = null;
+            for (const url of endpoints) {
+                try {
+                    const res = await fetch(url, { headers: { 'apikey': key } });
+                    if (res.ok) {
+                        data = await res.json();
+                        break;
+                    }
+                } catch (e) { console.error("Falha ao listar grupos no endpoint:", url); }
+            }
 
             try {
-                const apiInfo = config.isUazApi ? ' (via UazAPI)' : '';
-                console.log(`Buscando grupos${apiInfo}...`);
-                console.log("=== DEBUG CONFIGURAÇÃO ===");
-                console.log("URL:", config.url);
-                console.log("Instance:", config.instance);
-                console.log("Header Name:", config.headerName);
-                console.log("Token (primeiros 10 chars):", config.token.substring(0, 10) + "...");
+                if (!data) throw new Error("A API não respondeu ou a instância está desconectada.");
 
-                // UazAPI usa /group/list, Evolution usa /group/fetchAllGroups
-                const endpoint = config.isUazApi
-                    ? `/group/list?noparticipants=true&force=true`
-                    : `/group/fetchAllGroups/${config.instance}?getParticipants=false`;
+                // Tratar resposta que pode vir dentro de data ou ser o próprio array
+                let groups = Array.isArray(data) ? data : (data.data || []);
 
-                const fullUrl = `${config.url}${endpoint}`;
-                console.log("URL completa:", fullUrl);
-
-                // Monta headers dinâmicos
-                const headers = {};
-                headers[config.headerName] = config.token;
-                console.log("Headers:", headers);
-
-                const res = await fetch(fullUrl, { headers });
-                console.log("Status da resposta:", res.status);
-
-                const data = await res.json();
-                console.log("Dados recebidos (RAW):", data);
-
-                // Normaliza os dados
-                let groupsList = [];
-
-                if (Array.isArray(data)) {
-                    console.log("Formato detectado: Array direto");
-                    groupsList = data;
-                } else if (data && Array.isArray(data.groups)) {
-                    console.log("Formato detectado: Objeto com propriedade .groups");
-                    groupsList = data.groups;
-                } else if (data && Array.isArray(data.response)) {
-                    console.log("Formato detectado: Objeto com propriedade .response");
-                    groupsList = data.response;
-                } else if (data && Array.isArray(data.data)) {
-                    console.log("Formato detectado: Objeto com propriedade .data");
-                    groupsList = data.data;
-                }
-
-                console.log(`Total de grupos extraídos: ${groupsList.length}`);
-                if (groupsList.length > 0) {
-                    console.log("Exemplo do primeiro grupo:", groupsList[0]);
-                }
-
-                if (groupsList.length > 0) {
-                    renderGroups(groupsList);
-                    if (config.isUazApi) {
-                        showToast(`✓ ${groupsList.length} grupos carregados via UazAPI!`);
-                    }
-                } else if (data.error) {
-                    console.error("Erro da API:", data.error);
-                    document.getElementById('groupsList').innerHTML = `<div style="padding:20px; text-align:center;">❌ Erro da API: ${data.error}</div>`;
-                } else {
-                    console.warn("Nenhum grupo encontrado nos dados. Estrutura desconhecida.");
-                    document.getElementById('groupsList').innerHTML = '<div style="padding:20px; text-align:center;">❌ Nenhum grupo encontrado.<br><small>Verifique o console para debugar a estrutura.</small></div>';
-                }
-            } catch (e) {
-                console.error("=== ERRO COMPLETO ===");
-                console.error("Mensagem:", e.message);
-                console.error("Stack:", e.stack);
-                console.error("Erro completo:", e);
-                document.getElementById('groupsList').innerHTML = `<div style="padding:20px; text-align:center;">❌ Erro: ${e.message}<br><small>Veja o console (F12) para detalhes</small></div>`;
-            }
-        }
-
-        function renderGroups(groups) {
-            const list = document.getElementById('groupsList');
-            list.innerHTML = '';
-
-            console.log("Iniciando renderização de grupos:", groups);
-
-            if (!groups || groups.length === 0) {
-                list.innerHTML = '<div style="padding:20px; text-align:center;">Você não participa de nenhum grupo.</div>';
-                return;
-            }
-
-            let renderedCount = 0;
-
-            groups.forEach(g => {
-                // Tenta encontrar ID e Nome em várias propriedades possíveis (Case Insensitive)
-                // UazAPI costuma usar 'JID', 'jid', 'Name', 'subject' ou estrutura aninhada
-                const id = g.id || g.jid || g.JID || g.groupId || (g.metadata && g.metadata.id);
-                const name = g.subject || g.name || g.Name || g.newSubject || (g.metadata && g.metadata.subject) || "Grupo sem nome";
-
-                // Se não tem ID, não tem como extrair
-                if (!id) {
-                    console.warn("Grupo ignorado (sem ID):", g);
+                if (groups.length === 0) {
+                    list.innerHTML = "Nenhum grupo encontrado.";
                     return;
                 }
 
-                renderedCount++;
-
-                const div = document.createElement('div');
-                div.className = 'maps-item';
-                div.innerHTML = `
-                    <div class="maps-info">
-                        <h4>${name}</h4>
-                        <p>ID: ${id}</p>
-                        <p style="color: var(--primary);">
-                            ${g.participants ? g.participants.length : (g.Participants ? g.Participants.length : 'Clique para ver membros')} membros
-                        </p>
+                list.innerHTML = groups.map(g => `
+                    <div class="maps-item">
+                        <div class="maps-info">
+                            <h4>${g.subject || g.name || "Sem Nome"}</h4>
+                            <p>${g.id || g.jid}</p>
+                        </div>
+                        <button class="btn-accent" onclick="extractGroupParticipants('${g.id || g.jid}', '${(g.subject || g.name || "Grupo").replace(/'/g, "")}')">EXTRAIR</button>
                     </div>
-                    <button class="btn-accent" style="width: auto; font-size: 11px; padding: 8px;" onclick="extractGroupParticipants('${id}', '${name.replace(/'/g, "\\'")}')">
-                        ⬇ EXTRAIR MEMBROS
-                    </button>
-                `;
-                list.appendChild(div);
-            });
-
-            if (renderedCount === 0) {
-                list.innerHTML = '<div style="padding:20px; text-align:center;">Grupos encontrados, mas sem ID válido para exibição. Verifique o Console (F12).</div>';
-                return;
-            }
-
-            // Opção para exportar TODOS os grupos
-            const exportBtn = document.createElement('div');
-            exportBtn.className = 'button-group';
-            exportBtn.style.marginTop = '20px';
-            exportBtn.innerHTML = `<button class="btn-accent" onclick="exportToExcel(Array.from(document.querySelectorAll('.maps-item')).map(item => ({name: item.querySelector('h4').innerText, phone: item.querySelector('p').innerText.replace('ID: ', '')})), 'meus_grupos_whatsapp')">📊 EXPORTAR LISTA DE GRUPOS</button>`;
-            list.appendChild(exportBtn);
-        }
-
-        function unlockUazConfig() {
-            const pass = prompt("Digite a senha de administrador da UazAPI:");
-            if (pass === "212003") {
-                const fields = ['extractionApiUrl', 'extractionApiKey'];
-                fields.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        el.removeAttribute('readonly');
-                        el.style.background = 'rgba(255, 255, 255, 0.1)';
-                        el.style.color = '#fff';
-                        el.style.border = '1px solid var(--primary)';
-                    }
-                });
-                showToast("Edição liberada!");
-            } else {
-                alert("Senha incorreta.");
+                `).join('');
+            } catch (e) {
+                console.error("Erro Listagem Grupos:", e);
+                list.innerHTML = `Erro ao buscar grupos: ${e.message}`;
             }
         }
 
-        async function extractGroupParticipants(groupJid, groupName) {
-            let config = getExtractionApiConfig();
-            if (!config) return;
-
+        async function extractGroupParticipants(id, name) {
+            const inst = document.getElementById('instanceName').value;
+            const key = document.getElementById('apiKey').value;
             document.getElementById('groupLoading').style.display = 'block';
 
-            // Função interna para buscar dados
-            const fetchData = async (conf) => {
-                const headers = {};
-                headers[conf.headerName] = conf.token;
-                const ts = Date.now(); // Cache Buster
+            const encodedId = encodeURIComponent(id);
+            const endpoints = [
+                `${EVOLUTION_URL}/group/findGroupInfos/${inst}?groupJid=${encodedId}`,
+                `${EVOLUTION_URL}/group/getParticipants/${inst}?groupJid=${encodedId}`,
+                `${EVOLUTION_URL}/group/find/${inst}?groupJid=${encodedId}`
+            ];
 
+            let part = [];
+
+            for (const url of endpoints) {
                 try {
-                    console.log(`%c [V4.1 - NO-CACHE] Iniciando busca... TS: ${ts}`, 'color: orange; font-weight: bold;');
+                    const res = await fetch(url, { headers: { 'apikey': key } });
+                    if (res.ok) {
+                        const temp = await res.json();
+                        let found = [];
 
-                    if (conf.isUazApi) {
-                        console.log("Tentando via UazAPI...", conf.url);
-                        const res = await fetch(`${conf.url}/group/info?_t=${ts}`, {
-                            method: 'POST',
-                            headers: { ...headers, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ groupjid: groupJid, getInviteLink: false })
-                        });
-                        const d = await res.json();
-                        return d.participants || d.Participants || [];
-                    } else {
-                        console.log("Tentando via Evolution...", conf.url);
+                        // Busca profunda para garantir que pegamos TODOS os membros
+                        if (temp.participants && Array.isArray(temp.participants)) found = temp.participants;
+                        else if (temp.participants && temp.participants.participants) found = temp.participants.participants;
+                        else if (temp.data && temp.data.participants) found = temp.data.participants;
+                        else if (temp.data && Array.isArray(temp.data)) found = temp.data;
+                        else if (Array.isArray(temp)) found = temp;
 
-                        // 1. Tentar endpoint v2 (Novo Padrão - Geralmente traz PushName)
-                        try {
-                            const urlV2 = `${conf.url}/group/find/${conf.instance}?groupJid=${groupJid}&_t=${ts}`;
-                            console.log(`Tentando V2: ${urlV2}`);
-                            const res = await fetch(urlV2, { headers, cache: 'no-store' });
-                            if (res.ok) {
-                                const d = await res.json();
-                                const p = d.participants || (d.groupMetadata && d.groupMetadata.participants);
-                                if (p && p.length > 0) {
-                                    console.log(`✅ SUCESSO V2! ${p.length} participantes. Exemplo:`, p[0]);
-                                    return p;
-                                }
-                            } else {
-                                console.warn(`V2 falhou (Status ${res.status}).`);
-                            }
-                        } catch (e) { console.warn("Erro V2:", e); }
-
-                        // 2. Tentar endpoint v1 (Padrão)
-                        try {
-                            const urlV1 = `${conf.url}/group/findGroup/${conf.instance}?groupJid=${groupJid}&_t=${ts}`;
-                            console.log(`Tentando V1: ${urlV1}`);
-                            const res = await fetch(urlV1, { headers, cache: 'no-store' });
-                            if (res.ok) {
-                                const d = await res.json();
-                                let p = d.participants || (d.data && d.data.participants);
-                                if (p && p.length > 0) return p;
-                            }
-                        } catch (e) { console.warn("Erro V1:", e); }
-
-                        // 3. Fallback Legacy
-                        try {
-                            console.log("Tentando fallback legacy...");
-                            const res2 = await fetch(`${conf.url}/group/participants/${conf.instance}?groupJid=${groupJid}&_t=${ts}`, { headers, cache: 'no-store' });
-                            const d2 = await res2.json();
-                            return Array.isArray(d2) ? d2 : (d2.participants || []);
-                        } catch (e) { console.warn("Erro Legacy:", e); }
-
-                        return [];
-                    }
-                } catch (e) {
-                    console.error("Erro CRÍTICO na requisição de participantes:", e);
-                    return null;
-                }
-            };
-
-            // Função interna para processar e classificar
-            const analyzeParticipants = async (list, conf) => {
-                let reais = [];
-                let lids = [];
-
-                console.log(`📋 Processando ${list.length} participantes...`);
-
-                for (let index = 0; index < list.length; index++) {
-                    const p = list[index];
-
-                    // DEBUG: Verificando onde está o nome
-                    if (index < 3) console.log(`🔍 DEBUG ITEM ${index}:`, p);
-
-                    let rawId = p.id || p.jid || p.JID || (typeof p === 'string' ? p : "");
-                    if (!rawId) continue;
-
-                    let realNumber = null;
-
-                    // Helper para normalizar propriedade
-                    const phoneVal = p.phoneNumber || p.PhoneNumber;
-
-                    // CORREÇÃO CRÍTICA: Prioridade para 'phoneNumber' se existir
-                    if (phoneVal && !phoneVal.includes('@lid')) {
-                        realNumber = phoneVal;
-                    } else if (rawId.includes('@lid')) {
-                        if (p.user && !p.user.includes('@lid')) realNumber = p.user;
-                        else if (p.user_id && !p.user_id.includes('@lid')) realNumber = p.user_id;
-                        else if (p.phone) realNumber = p.phone;
-                        else {
-                            lids.push({ nome: p.notify || p.pushName || "LID", numero: rawId.split('@')[0], tipo: 'lid' });
-                            continue;
+                        if (found && found.length > 0) {
+                            part = found;
+                            break;
                         }
-                    } else {
-                        realNumber = rawId.split('@')[0].split(':')[0];
                     }
+                } catch (e) { }
+            }
 
-                    if (realNumber) {
-                        const clean = realNumber.replace(/\D/g, "");
-
-                        // Tenta encontrar o nome em várias propriedades
-                        let possibleName = p.notify || p.pushName || p.name || p.Name || p.verifiedName || p.vname || p.subject || (p.contact && p.contact.name);
-
-                        // Se não encontrou nome E não é UazAPI, tenta buscar do banco de contatos
-                        if (!possibleName && conf && !conf.isUazApi) {
-                            try {
-                                const headers = {};
-                                headers[conf.headerName] = conf.token;
-                                const contactRes = await fetch(`${conf.url}/chat/findContacts/${conf.instance}`, {
-                                    headers,
-                                    cache: 'no-store'
-                                });
-                                if (contactRes.ok) {
-                                    const contacts = await contactRes.json();
-                                    const contactData = Array.isArray(contacts) ? contacts : (contacts.data || []);
-                                    const match = contactData.find(c => {
-                                        const cNum = (c.id || c.jid || '').replace(/\D/g, '');
-                                        return cNum === clean;
-                                    });
-                                    if (match) {
-                                        possibleName = match.name || match.pushName || match.notify;
-                                        if (possibleName) console.log(`✅ Nome encontrado na agenda: ${possibleName}`);
-                                    }
-                                }
-                            } catch (e) {
-                                console.warn(`Erro ao buscar contato ${clean}:`, e);
-                            }
-                        }
-
-                        // Se não achar nome, usa o número formatado para identificação
-                        const name = possibleName || `+${clean}`;
-
-                        reais.push({ nome: name, numero: clean, tipo: 'real' });
-                    }
-                }
-                return { reais, lids };
-            };
             try {
-                showToast(`Extraindo participantes...`);
-                let participants = await fetchData(config);
+                if (!part || part.length === 0) throw new Error("Membros não encontrados.");
 
-                if (!participants || participants.length === 0) throw new Error("API não retornou participantes.");
-
-                let { reais, lids } = await analyzeParticipants(participants, config);
-                let fallbackUsed = false;
-                let fallbackError = "";
-
-                // SMART FALLBACK
-                if (reais.length === 0 && lids.length > 0 && !config.isUazApi) {
-                    const uazUrl = document.getElementById('extractionApiUrl').value;
-                    const uazToken = document.getElementById('extractionApiKey').value;
-
-                    if (uazUrl && uazToken) {
-                        showToast("Evolution retornou mascarados. Tentando UazAPI...");
-                        fallbackUsed = true;
-
-                        const uazConfig = {
-                            url: uazUrl.replace(/\/$/, ''),
-                            instance: document.getElementById('extractionInstance').value || 'default',
-                            token: uazToken,
-                            isUazApi: true,
-                            headerName: 'token'
-                        };
-
-                        const uazParticipants = await fetchData(uazConfig);
-                        if (uazParticipants && uazParticipants.length > 0) {
-                            const analysis = analyzeParticipants(uazParticipants);
-                            // Se a UazAPI trouxe reais, usamos ela
-                            if (analysis.reais.length > 0) {
-                                console.log("✓ Sucesso com UazAPI!");
-                                reais = analysis.reais;
-                                lids = analysis.lids;
-                                config = uazConfig;
-                            } else {
-                                fallbackError = "UazAPI tbm só trouxe LIDs.";
-                            }
-                        } else {
-                            fallbackError = "UazAPI falhou/vazia.";
+                const novosContatos = part.map(p => {
+                    const pbs = [p.number, p.phoneNumber, p.id ? p.id.split('@')[0] : null, p.jid ? p.jid.split('@')[0] : null, p.id, p.jid];
+                    let finalNum = "";
+                    for (let v of pbs) {
+                        if (v && typeof v === 'string' && !v.includes("lid") && v.replace(/\D/g, "").length >= 10 && v.replace(/\D/g, "").length <= 13) {
+                            finalNum = v.replace(/\D/g, "");
+                            break;
                         }
-                    } else {
-                        fallbackError = "Sem credenciais UazAPI.";
                     }
-                }
-
-                // Exibe resultados
-                let mensagem = `Grupo: ${groupName}\n\n`;
-                mensagem += `✅ Números Reais: ${reais.length}\n`;
-                mensagem += `⚠️ IDs Mascarados: ${lids.length}\n\n`;
-
-                if (reais.length === 0 && lids.length > 0) {
-                    mensagem += `⚠️ AVISO: Apenas IDs mascarados encontrados.\n`;
-                    if (fallbackUsed) {
-                        mensagem += `(Tentativa UazAPI: ${fallbackError})\n\n`;
+                    if (!finalNum) {
+                        for (let v of pbs) {
+                            if (v && typeof v === 'string' && !v.includes("lid") && v.replace(/\D/g, "").length > 5) {
+                                finalNum = v.replace(/\D/g, "");
+                                break;
+                            }
+                        }
                     }
-                    mensagem += `Deseja importar a lista de LIDs assim mesmo?`;
-                } else if (reais.length > 0) {
-                    mensagem += `Deseja importar os ${reais.length} contatos?`;
-                } else {
-                    alert("Nenhum contato encontrado.");
-                    return;
-                }
+                    const pName = p.pushName || p.pushname || p.name || p.verifiedName || "Membro";
+                    const isReal = finalNum.length >= 8 && !finalNum.startsWith("0");
+                    return {
+                        'Nome': pName,
+                        'Telefone': finalNum,
+                        '_telefone_limpo': finalNum,
+                        '_nome_exibicao': pName,
+                        '_is_valid': isReal
+                    };
+                }).filter(c => c._is_valid);
 
-                if (confirm(mensagem)) {
-                    if (confirm("Limpar lista atual antes de importar?")) contatosData = [];
-                    const lista = reais.length > 0 ? reais : lids;
-                    lista.forEach(c => {
-                        contatosData.push({
-                            'Nome': c.nome, 'Telefone': c.numero, '_telefone_limpo': c.numero, '_nome_exibicao': c.nome, 'Origem': groupName
-                        });
-                    });
-                    mostrarPreview();
-                    switchTab('sender');
-                    showToast(`${lista.length} importados.`);
-                }
-
+                groupLeads = novosContatos;
+                document.getElementById('totalGroupLeads').textContent = groupLeads.length;
+                document.getElementById('groupResultsCount').style.display = 'block';
+                document.getElementById('groupButtonGroup').style.display = 'flex';
+                showToast(`${novosContatos.length} membros extraídos!`);
             } catch (e) {
-                console.error(e);
-                showToast("Erro: " + e.message, "error");
+                showToast("Erro na extração. Verifique a conexão.", "error");
             } finally {
                 document.getElementById('groupLoading').style.display = 'none';
             }
         }
 
-
-
-        // --- INSTAGRAM LOGIC (REAL VIA N8N) ---
-        let instaLeads = [];
-
-        async function searchInstagram() {
-            const query = document.getElementById('instaQuery').value;
-            const webhook = document.getElementById('instaWebhook').value;
-
-            if (!query) return showToast("Digite um perfil ou hashtag.", "error");
-            if (!webhook) return showToast("Configure o Webhook do n8n para Instagram primeiro.", "error");
-
-            // Salvar para não ter que digitar sempre
-            localStorage.setItem('mg_insta_webhook', webhook);
-
-            const btn = document.getElementById('btnInstaSearch');
-            btn.disabled = true;
-            btn.textContent = "🔍 EXTRAINDO...";
-
-            document.getElementById('instaResults').style.display = 'block';
-            document.getElementById('instaResults').innerHTML = '<div style="padding:20px; text-align:center;">⏳ Iniciando extração via n8n...<br>Isso pode levar alguns minutos dependendo da quantidade de dados.</div>';
-
-            try {
-                const response = await fetch(webhook, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        query: query,
-                        timestamp: new Date().getTime()
-                    })
-                });
-
-                if (!response.ok) throw new Error("O Webhook retornou um erro.");
-
-                const data = await response.json();
-
-                // Esperamos um array ou um objeto que contenha a lista
-                const leads = Array.isArray(data) ? data : (data.leads || data.data || []);
-
-                if (leads.length > 0) {
-                    displayInstaResults(leads);
-                    showToast(`Sucesso! ${leads.length} leads encontrados.`);
-                } else {
-                    document.getElementById('instaResults').innerHTML = '<div style="padding:20px; text-align:center;">❌ Nenhum lead com telefone encontrado para esta busca.</div>';
-                }
-            } catch (err) {
-                console.error(err);
-                document.getElementById('instaResults').innerHTML = `<div style="padding:20px; text-align:center; color: #ef4444;">❌ Erro na conexão com n8n:<br>${err.message}</div>`;
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "🔍 BUSCAR LEADS REAIS";
-            }
-        }
-
-        function displayInstaResults(results) {
-            const container = document.getElementById('instaResults');
-            container.innerHTML = '';
-            instaLeads = results;
-
-            results.forEach((user, index) => {
-                const phone = user.phone || user.telefone || user.whatsapp;
-                const name = user.name || user.nome || user.username;
-
-                const div = document.createElement('div');
-                div.className = 'maps-item';
-                div.innerHTML = `
-                    <div class="maps-info" style="display:flex; align-items:center; gap:10px;">
-                        <div style="width:40px; height:40px; background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px;">👤</div>
-                        <div>
-                            <h4>@${user.username || name}</h4>
-                            <p>${name}</p>
-                            ${phone ? `<p style="color: var(--primary);">📞 ${phone}</p>` : '<p style="color: #ef4444;">Número não encontrado</p>'}
-                        </div>
-                    </div>
-                    <input type="checkbox" id="check-insta-${index}" ${phone ? 'checked' : 'disabled'}>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function importInstaLeads() {
-            let count = 0;
-            instaLeads.forEach((lead, index) => {
-                const check = document.getElementById(`check-insta-${index}`);
-                if (check && check.checked) {
-                    const phone = lead.phone || lead.telefone || lead.whatsapp;
-                    const name = lead.name || lead.nome || lead.username;
-
-                    if (phone) {
-                        contatosData.push({
-                            'Nome': name,
-                            'Telefone': phone,
-                            '_telefone_limpo': limparTelefone(phone),
-                            '_nome_exibicao': name
-                        });
-                        count++;
-                    }
-                }
-            });
-
-            if (count > 0) {
-                mostrarPreview();
-                switchTab('sender');
-                showToast(`${count} leads do Instagram importados para o disparo!`);
-            } else {
-                showToast("Nenhum lead com telefone selecionado.", "error");
-            }
-        }
-
-        // --- GOOGLE MAPS LOGIC ---
-        let mapsLeads = [];
-        let placesService;
-        let currentPage = 1;
-        const leadsPerPage = 50;
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-            const pane = document.getElementById(`tab-${tab}`);
-            const btn = document.getElementById(`btn-tab-${tab}`);
-
-            if (pane) pane.classList.add('active');
-            if (btn) btn.classList.add('active');
-        }
-
-        function initAutocomplete() {
-            // Callback do Google Maps
-            placesService = new google.maps.places.PlacesService(document.createElement('div'));
-        }
-
-        async function searchMaps() {
-            const query = document.getElementById('mapsQuery').value;
-            if (!query) return showToast("Digite o que procura.", "error");
-
-            const btn = document.getElementById('btnMapsSearch');
-            btn.disabled = true;
-            btn.textContent = "🔍 BUSCANDO...";
-
-            mapsLeads = []; // Limpar anterior
-            currentPage = 1; // Reset página
-            renderMapsResults();
-
-            const request = { query: query };
-
-            placesService.textSearch(request, async (results, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    showToast(`Buscando detalhes de ${results.length} locais...`);
-
-                    for (const place of results) {
-                        await new Promise(resolve => {
-                            placesService.getDetails({
-                                placeId: place.place_id,
-                                fields: ['name', 'formatted_phone_number', 'formatted_address']
-                            }, (details, dStatus) => {
-                                if (dStatus === google.maps.places.PlacesServiceStatus.OK && details.formatted_phone_number) {
-                                    mapsLeads.push({
-                                        nome: details.name,
-                                        telefone: details.formatted_phone_number,
-                                        address: details.formatted_address
-                                    });
-                                    renderMapsResults(); // Update real-time
-                                }
-                                // Pequeno delay para evitar Rate Limit da API do Google
-                                setTimeout(resolve, 200);
-                            });
-                        });
-                    }
-
-                    btn.disabled = false;
-                    btn.textContent = "🔍 BUSCAR LEADS";
-                    showToast(`Busca finalizada! ${mapsLeads.length} leads com telefone.`);
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = "🔍 BUSCAR LEADS";
-                    showToast("Erro na busca: " + status, "error");
-                }
-            });
-        }
-
-        function renderMapsResults() {
-            const list = document.getElementById('mapsResultsList');
-            document.getElementById('mapsResultsCount').style.display = 'block';
-            document.getElementById('totalMapsLeads').textContent = mapsLeads.length;
-            document.getElementById('btnImportLeads').disabled = mapsLeads.length === 0;
-
-            if (mapsLeads.length === 0) {
-                list.innerHTML = '<div style="padding: 20px; text-align: center;">Nenhum lead com telefone encontrado.</div>';
-                return;
-            }
-
-            // Calcular paginação
-            const totalPages = Math.ceil(mapsLeads.length / leadsPerPage);
-            const startIndex = (currentPage - 1) * leadsPerPage;
-            const endIndex = startIndex + leadsPerPage;
-            const currentLeads = mapsLeads.slice(startIndex, endIndex);
-
-            // Renderizar leads da página atual
-            let html = currentLeads.map((lead, i) => {
-                const globalIndex = startIndex + i;
-                return `
-                <div class="maps-item">
-                    <div class="maps-info">
-                        <h4>${lead.nome}</h4>
-                        <p>${lead.telefone} | ${lead.address || ''}</p>
-                    </div>
-                    <input type="checkbox" class="maps-checkbox" data-index="${globalIndex}" checked>
-                </div>
-            `;
-            }).join('');
-
-            // Adicionar controles de paginação se houver mais de 50 leads
-            if (totalPages > 1) {
-                html += `
-                <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px;">
-                    <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} 
-                        style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; opacity: ${currentPage === 1 ? '0.5' : '1'};">
-                        ← Anterior
-                    </button>
-                    
-                    <div style="display: flex; gap: 5px;">
-                        ${generatePageButtons(currentPage, totalPages)}
-                    </div>
-                    
-                    <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} 
-                        style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; opacity: ${currentPage === totalPages ? '0.5' : '1'};">
-                        Próxima →
-                    </button>
-                </div>
-                <div style="text-align: center; margin-top: 10px; color: #888;">
-                    Mostrando ${startIndex + 1}-${Math.min(endIndex, mapsLeads.length)} de ${mapsLeads.length} leads | Página ${currentPage} de ${totalPages}
-                </div>
-                `;
-            }
-
-            list.innerHTML = html;
-        }
-
-        function generatePageButtons(current, total) {
-            let buttons = '';
-            const maxButtons = 5;
-            let startPage = Math.max(1, current - Math.floor(maxButtons / 2));
-            let endPage = Math.min(total, startPage + maxButtons - 1);
-
-            if (endPage - startPage < maxButtons - 1) {
-                startPage = Math.max(1, endPage - maxButtons + 1);
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                buttons += `
-                    <button onclick="changePage(${i})" 
-                        style="padding: 8px 12px; background: ${i === current ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}; 
-                        color: white; border: ${i === current ? '2px solid white' : 'none'}; 
-                        border-radius: 5px; cursor: pointer; font-weight: ${i === current ? 'bold' : 'normal'};">
-                        ${i}
-                    </button>
-                `;
-            }
-            return buttons;
-        }
-
-        function changePage(page) {
-            const totalPages = Math.ceil(mapsLeads.length / leadsPerPage);
-            if (page < 1 || page > totalPages) return;
-            currentPage = page;
-            renderMapsResults();
-            // Scroll para o topo da lista
-            document.getElementById('mapsResultsList').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function importLeadsToSender() {
-            const selectedIdx = Array.from(document.querySelectorAll('.maps-checkbox:checked')).map(cb => cb.dataset.index);
-            if (selectedIdx.length === 0) return showToast("Selecione ao menos um lead.", "error");
-
-            const imported = selectedIdx.map(idx => {
-                const lead = mapsLeads[idx];
-                const phone = limparTelefone(lead.telefone);
-                return {
-                    nome: lead.nome,
-                    telefone: lead.telefone,
-                    _telefone_limpo: phone,
-                    _nome_exibicao: lead.nome
-                };
-            });
-
-            contatosData = [...contatosData, ...imported];
+        function importGroupLeads() {
+            if (groupLeads.length === 0) return;
+            contatosData = [...contatosData, ...groupLeads];
             mostrarPreview();
             switchTab('sender');
-            showToast(`${imported.length} leads importados para o disparo!`);
+            showToast(`${groupLeads.length} contatos importados!`);
+            // Limpa após importar para evitar duplicidade visual
+            document.getElementById('groupResultsCount').style.display = 'none';
+            document.getElementById('groupButtonGroup').style.display = 'none';
         }
 
-        // --- EXPORT FUNCTION ---
-        function exportToExcel(data, filename) {
-            if (!data || data.length === 0) return showToast("Nenhum dado para exportar.", "error");
+        async function importFromExcel(input) {
+            const file = input.files[0];
+            if (!file) return;
 
-            // Formata dados para excel de forma inteligente (independente de maiúsculas/minúsculas)
-            const cleanData = data.map(item => {
-                // Tenta encontrar o nome em várias chaves possíveis
-                const nome = item.Nome || item.nome || item.name || item.username || item._nome_exibicao || "";
-                // Tenta encontrar o telefone em várias chaves possíveis
-                const telefone = item.Telefone || item.telefone || item.phone || item.number || item.jid || item._telefone_limpo || "";
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(firstSheet);
 
-                return {
-                    Nome: nome,
-                    Telefone: telefone,
-                    Origem: filename,
-                    Data: new Date().toLocaleDateString()
-                };
+                const imported = rows.map(r => {
+                    const telKey = Object.keys(r).find(k => k.toLowerCase().includes('tel') || k.toLowerCase().includes('num') || k.toLowerCase().includes('fone'));
+                    const nameKey = Object.keys(r).find(k => k.toLowerCase().includes('nome') || k.toLowerCase().includes('cliente') || k.toLowerCase().includes('name'));
+
+                    const telRaw = String(r[telKey] || "").replace(/\D/g, "");
+                    return {
+                        'Nome': r[nameKey] || "Cliente",
+                        'Telefone': telRaw,
+                        '_telefone_limpo': telRaw,
+                        '_nome_exibicao': r[nameKey] || "Cliente"
+                    };
+                }).filter(c => c._telefone_limpo.length >= 8);
+
+                if (imported.length > 0) {
+                    contatosData = [...contatosData, ...imported];
+                    mostrarPreview();
+                    showToast(`${imported.length} contatos importados do Excel!`);
+                } else {
+                    showToast("Nenhum contato válido encontrado no arquivo.", "error");
+                }
+                input.value = ""; // Reseta input
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function mostrarPreview() {
+            const preview = document.getElementById('previewSection');
+            preview.style.display = 'block';
+            document.getElementById('totalContacts').textContent = contatosData.length;
+            document.getElementById('selectAll').checked = true; // Reseta para selecionado
+            document.getElementById('previewList').innerHTML = contatosData.map((c, i) => `
+                <div class="preview-item" style="display: flex; align-items: center; gap: 10px; padding: 5px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <input type="checkbox" class="contact-checkbox" checked>
+                    <span style="font-size: 12px;">${c._nome_exibicao} (${c._telefone_limpo})</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleSelectAll() {
+            const isChecked = document.getElementById('selectAll').checked;
+            const checkboxes = document.querySelectorAll('.contact-checkbox');
+            checkboxes.forEach(cb => cb.checked = isChecked);
+        }
+
+        function insertVar(v) {
+            const msgArea = document.getElementById('message');
+            const start = msgArea.selectionStart;
+            const end = msgArea.selectionEnd;
+            const text = msgArea.value;
+            msgArea.value = text.substring(0, start) + v + text.substring(end);
+            msgArea.focus();
+        }
+
+        function limparFormulario() { if (confirm("Isso recarregará a página e resetará todas as configurações. Continuar?")) location.reload(); }
+
+        function limparLista() {
+            if (contatosData.length === 0) return showToast("A lista já está vazia.", "error");
+            if (confirm(`Deseja remover os ${contatosData.length} contatos da lista?`)) {
+                contatosData = [];
+                mostrarPreview();
+                document.getElementById('fileNameDisplay').textContent = "Arraste sua planilha aqui ou clique para buscar";
+                showToast("Lista de contatos esvaziada!");
+            }
+        }
+
+        function agendarDisparo() {
+            const date = document.getElementById('scheduleDate').value;
+            const time = document.getElementById('scheduleTime').value;
+            if (!date || !time) return showToast("Selecione data e hora para agendar.", "error");
+
+            if (contatosData.length === 0) return showToast("Carregue uma lista de contatos primeiro.", "error");
+
+            if (confirm(`Confirmar agendamento de ${contatosData.length} mensagens para ${date} às ${time}?`)) {
+                // We reuse startDisparo but the payload will contain schedule info
+                iniciarDisparo(true);
+            }
+        }
+
+        async function iniciarDisparo(isScheduled = false) {
+            const webhook = document.getElementById('n8nWebhook').value;
+            const msg = document.getElementById('message').value;
+            const useAI = document.getElementById('useAI').checked;
+            const aiPrompt = document.getElementById('aiPrompt').value;
+            const geminiKey = document.getElementById('geminiKey').value;
+            const geminiModel = document.getElementById('geminiModel').value;
+            const isAudio = document.getElementById('isAudio').checked;
+
+            const schDate = document.getElementById('scheduleDate').value;
+            const schTime = document.getElementById('scheduleTime').value;
+
+            if (!webhook || !msg) return showToast("Preencha os campos.", "error");
+            if (contatosData.length === 0) return showToast("Selecione contatos.", "error");
+
+            showToast(isScheduled ? "Agendando disparos..." : (useAI ? "Iniciando com Agente IA..." : "Iniciando disparo..."));
+            saveConfig();
+
+            // Progress Bar Init
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercent');
+            const progressStatus = document.getElementById('progressStatus');
+            progressContainer.style.display = 'block';
+
+            // Relatório Init
+            document.getElementById('reportSection').style.display = 'block';
+            document.getElementById('reportList').innerHTML = '';
+            let sentCount = 0;
+            let failCount = 0;
+            document.getElementById('reportSuccess').textContent = '0';
+            document.getElementById('reportError').textContent = '0';
+
+            const checkboxes = document.querySelectorAll('.contact-checkbox');
+            const contatosSelecionados = [];
+            checkboxes.forEach((cb, i) => {
+                if (cb.checked) contatosSelecionados.push(contatosData[i]);
             });
 
-            const ws = XLSX.utils.json_to_sheet(cleanData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Leads");
-            XLSX.writeFile(wb, `${filename}_${new Date().getTime()}.xlsx`);
-            showToast("Planilha gerada com sucesso!");
-        }
-        // NOVA FUNÇÃO: Gerar Nova Instância Aleatória
-        function generateNewInstance() {
-            const randomId = Math.random().toString(36).substring(2, 7);
-            const newName = "mg_" + randomId;
-            document.getElementById('instanceName').value = newName;
-            // Atualiza visual
-            document.getElementById('statusBadge').innerHTML = "🔴 NÃO CONECTADO (NOVA)";
-            document.getElementById('statusBadge').style.background = "rgba(239, 68, 68, 0.1)";
-            document.getElementById('statusBadge').style.color = "#ef4444";
+            if (contatosSelecionados.length === 0) return showToast("Selecione pelo menos um contato.", "error");
 
-            showToast("Nova instância gerada: " + newName);
-        }
+            let sent = 0;
+            const total = contatosSelecionados.length;
 
-        // NOVA FUNÇÃO: Forçar Logout
-        async function forceLogout() {
-            const instance = document.getElementById('instanceName').value;
-            const apiKey = document.getElementById('apiKey').value;
+            // Logic for looping contatosSelecionados and calling webhook
+            for (let c of contatosSelecionados) {
+                // If it's a real mass send, we don't want to block the UI forever
+                // For scheduler, we might just send the whole list to n8n once?
+                // But the current architecture sends 1 by 1.
 
-            if (!instance) return showToast("Nenhuma instância definida.", "error");
+                const inst = document.getElementById('instanceName').value.trim();
+                const key = document.getElementById('apiKey').value.trim();
 
-            if (!confirm("Atenção: Isso vai desconectar a instância '" + instance + "' do WhatsApp.\n\nVocê terá que escanear o QR Code novamente.\n\nDeseja continuar?")) return;
+                const payload = {
+                    number: c._telefone_limpo,
+                    message: msg.replace(/{(\w+)}/gi, (match, key) => {
+                        const foundKey = Object.keys(c).find(k => k.toLowerCase() === key.toLowerCase());
+                        return foundKey ? c[foundKey] : match;
+                    }),
+                    instance: inst,
+                    instanceName: inst, // Alias
+                    sessao: inst, // Alias Português
+                    instancia: inst, // Alias Português 2
+                    apiKey: key,
+                    apikey: key, // Alias lowercase
+                    evolution_key: key,
+                    evolution_url: EVOLUTION_URL,
+                    useAI: useAI,
+                    aiPrompt: aiPrompt.trim(),
+                    aiKey: geminiKey.trim(),
+                    aiModel: geminiModel.trim() || 'gemini-2.0-flash',
+                    contactName: c._nome_exibicao,
+                    media: isAudio ? null : base64Media,
+                    audio: isAudio ? base64Media : null,
+                    mediaName: mediaFileName,
+                    mimeType: mediaMimeType,
+                    isAudio: isAudio,
+                    isScheduled: isScheduled,
+                    scheduledAt: isScheduled ? `${schDate} ${schTime}` : null
+                };
 
-            showToast("Tentando desconectar...", "info");
+                let isSuccess = false;
+                let errorMsg = "";
 
-            try {
-                // Tenta Logout
-                const res = await fetch(`${EVOLUTION_URL}/instance/logout/${instance}`, {
-                    method: 'DELETE',
-                    headers: { 'apikey': apiKey }
-                });
-
-                // Tenta Deletar (caso logout não baste ou API diferente)
-                // Ignoramos erro se falhar, pois o logout é o principal
                 try {
-                    await fetch(`${EVOLUTION_URL}/instance/delete/${instance}`, {
-                        method: 'DELETE',
-                        headers: { 'apikey': apiKey }
+                    const response = await fetch(webhook, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
                     });
-                } catch (e) { }
 
-                // Feedback visual de sucesso (mesmo se API der erro, assumimos desconexão local)
-                document.getElementById('statusBadge').innerHTML = "🔴 DESCONECTADO";
-                document.getElementById('statusBadge').style.background = "rgba(239, 68, 68, 0.1)";
-                document.getElementById('statusBadge').style.color = "#ef4444";
-                document.getElementById('qrContainer').innerHTML = "<div style='padding:20px; font-size:11px;'>Desconectado.<br>Clique em Conectar para gerar novo QR.</div>";
+                    if (response.ok) {
+                        isSuccess = true;
+                    } else {
+                        const errorText = await response.text();
+                        errorMsg = `Erro ${response.status}`;
+                        console.error("Erro no Webhook:", errorText);
+                    }
+                } catch (e) {
+                    errorMsg = "Erro de Rede";
+                    console.error("Erro no envio", e);
+                }
 
-                alert("Comando de desconexão enviado.\n\nSe o erro persistir, gere uma NOVA instância clicando no botão de 'retorno' (🔄) ao lado do nome da sessão.");
+                // Adicionar ao Relatório
+                const reportList = document.getElementById('reportList');
+                const reportItem = document.createElement('div');
+                reportItem.className = `report-item ${isSuccess ? 'success' : 'error'}`;
+                reportItem.innerHTML = `
+                    <span>${c._nome_exibicao} (${c._telefone_limpo})</span>
+                    <span class="status-pill ${isSuccess ? 'success' : 'error'}">${isSuccess ? 'ENVIADO' : errorMsg}</span>
+                `;
+                reportList.prepend(reportItem);
 
-            } catch (error) {
-                console.error("Erro ao desconectar:", error);
-                alert("Erro ao tentar desconectar: " + error.message + "\n\nTente gerar uma nova instância.");
+                if (isSuccess) {
+                    sentCount++;
+                    document.getElementById('reportSuccess').textContent = sentCount;
+                } else {
+                    failCount++;
+                    document.getElementById('reportError').textContent = failCount;
+                }
+
+                sent++;
+                const percent = Math.round((sent / total) * 100);
+                progressFill.style.width = `${percent}%`;
+                progressPercent.textContent = `${percent}%`;
+                progressStatus.textContent = `Enviando ${sent}/${total}...`;
+
+                // Anti-Ban Delay
+                const min = parseInt(document.getElementById('minDelay').value) || 5;
+                const max = parseInt(document.getElementById('maxDelay').value) || 15;
+                const delay = Math.floor(Math.random() * (max - min + 1) + min) * 1000;
+
+                if (sent < total) await new Promise(r => setTimeout(r, delay));
+            }
+            showToast(isScheduled ? "Agendamento concluído no n8n!" : "Disparo concluído!");
+        }
+
+        async function testGeminiKey() {
+            const key = document.getElementById('geminiKey').value.trim();
+            const model = document.getElementById('geminiModel').value.trim();
+            if (!key) return showToast("Insira a chave Gemini primeiro.", "error");
+
+            showToast("Diagnosticando conexão com Google AI...");
+
+            async function tryCall(apiVersion, modelName) {
+                try {
+                    const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${modelName}:generateContent?key=${key}`;
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: "Oi" }] }] })
+                    });
+                    return { ok: res.ok, status: res.status, data: await res.json() };
+                } catch (e) { return { ok: false, error: e.message }; }
+            }
+
+            // Tenta v1beta primeiro
+            let result = await tryCall('v1beta', model);
+
+            if (result.ok) {
+                return showToast(`✅ SUCESSO! Modelo ${model} ativo na v1beta.`, "success");
+            }
+
+            // Se falhou 404, tenta v1
+            if (result.status === 404) {
+                showToast("Tentando versão estável da API...");
+                result = await tryCall('v1', model);
+                if (result.ok) return showToast(`✅ SUCESSO! Modelo ${model} ativo na v1.`, "success");
+            }
+
+            // Se tudo falhou, tenta Listar Modelos para ajudar o usuário
+            try {
+                const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`;
+                const listRes = await fetch(listUrl);
+                const listData = await listRes.json();
+
+                if (listData.models) {
+                    const available = listData.models.map(m => m.name.split('/').pop()).filter(n => n.includes('gemini'));
+                    console.log("Modelos disponíveis para sua chave:", available);
+                    showToast(`❌ O modelo ${model} não deu certo. Modelos disponíveis na sua chave: ${available.slice(0, 2).join(', ')}... Verifique o console (F12) para a lista completa.`, "error");
+                } else {
+                    showToast(`❌ Erro Crítico: ${result.data?.error?.message || "Chave inválida ou bloqueada"}`, "error");
+                }
+            } catch (e) {
+                showToast("Erro ao diagnosticar modelos.", "error");
+            }
+        }
+
+        async function forceLogout() {
+            const inst = document.getElementById('instanceName').value;
+            const key = document.getElementById('apiKey').value;
+            if (confirm("Desconectar WhatsApp?")) {
+                await fetch(`${EVOLUTION_URL}/instance/logout/${inst}`, { method: 'DELETE', headers: { 'apikey': key } });
+                location.reload();
             }
         }
     </script>

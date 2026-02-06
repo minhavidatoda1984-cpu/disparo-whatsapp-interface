@@ -1,0 +1,35 @@
+{
+    "name": "mg-sender-pro",
+    "version": "2.0.0",
+    "description": "MG Sender - Disparo em Massa Inteligente e Multi-mídia",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
+    },
+    "author": "Magno Gomes",
+    "license": "ISC",
+    "devDependencies": {
+        "electron": "^28.3.3",
+        "electron-builder": "^24.9.1"
+    },
+    "build": {
+        "appId": "com.mgsender.app",
+        "productName": "MG Sender",
+        "directories": {
+            "buildResources": "assets"
+        },
+        "mac": {
+            "category": "public.app-category.business",
+            "icon": "assets/icon.png"
+        },
+        "win": {
+            "target": "nsis",
+            "icon": "assets/icon.png"
+        }
+    },
+    "dependencies": {
+        "xlsx": "^0.18.5"
+    }
+}

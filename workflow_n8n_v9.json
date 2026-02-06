@@ -1,328 +1,595 @@
 {
-    "name": "DISPARO WHATSAPP - V9 SAFE MODE (ANTIFALHA)",
-    "nodes": [
-        {
-            "parameters": {
-                "httpMethod": "POST",
-                "path": "disparo-whatsapp",
-                "responseMode": "responseNode",
-                "options": {}
-            },
-            "id": "a46e6b77-e2d6-4b0f-9e00-38a8ffb1f26d",
-            "name": "Webhook",
-            "type": "n8n-nodes-base.webhook",
-            "typeVersion": 2,
-            "position": [
-                -800,
-                208
-            ],
-            "webhookId": "disparo-whatsapp"
-        },
-        {
-            "parameters": {
-                "jsCode": "const input = $input.item.json;\nconst body = input.body || input;\nconst mensagemGlobal = body.message || body.mensagem || '';\nconst mediaData = body.media || null;\nconst audioData = body.audio || null;\n\n// Captura credenciais. Se não vier, usa string vazia.\nconst instanceName = body.instance || 'assessor_prosperazap';\nconst apiKey = body.apiKey || 'f98fed17beccac0149db6cfe6bfb7fff';\n\nlet lista = [];\nif (body.contatos && Array.isArray(body.contatos)) {\n    lista = body.contatos;\n} else if (Array.isArray(body)) {\n    lista = body;\n} else {\n    lista = [body];\n}\n\n// PROCESSA CONTATOS E PREPARA O TIPO DE ENVIO\nreturn lista.map(c => {\n  let tel = String(c.number || c.telefone || c.numero || '').replace(/\\D/g, '');\n  \n  if ((tel.length === 10 || tel.length === 11) && !tel.startsWith('55') && !tel.startsWith('1')) {\n    tel = '55' + tel;\n  }\n  \n  let msgFinal = mensagemGlobal.replace(/{nome}/gi, c.nome || c._nome_exibicao || 'Cliente');\n\n  return {\n    json: {\n      number: tel,\n      text: msgFinal,\n      media: mediaData,\n      audio: audioData,\n      instance: instanceName,\n      apiKey: apiKey\n    }\n  };\n}).filter(item => item.json.number.length >= 10);"
-            },
-            "id": "1884deb9-77d2-4538-94bd-5e735e03b11a",
-            "name": "Processar Dados",
-            "type": "n8n-nodes-base.code",
-            "typeVersion": 2,
-            "position": [
-                -544,
-                208
-            ]
-        },
-        {
-            "parameters": {
-                "respondWith": "json",
-                "responseBody": "={\n  \"success\": true,\n  \"message\": \"Processado pelo N8N (Safe Mode)\",\n  \"enviados\": {{ $('Processar Dados').all().length }}\n}",
+  "name": "DISPARO WHATSAPP - V10 AI EDITION",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
                 "options": {
-                    "responseHeaders": {
-                        "entries": [
-                            {
-                                "name": "Access-Control-Allow-Origin",
-                                "value": "*"
-                            },
-                            {
-                                "name": "Access-Control-Allow-Methods",
-                                "value": "POST, OPTIONS"
-                            },
-                            {
-                                "name": "Access-Control-Allow-Headers",
-                                "value": "Content-Type"
-                            }
-                        ]
-                    }
-                }
-            },
-            "id": "7e274d9f-9aca-4b23-ae58-f40931f217ef",
-            "name": "Resposta Interface",
-            "type": "n8n-nodes-base.respondToWebhook",
-            "typeVersion": 1.1,
-            "position": [
-                -304,
-                464
-            ]
-        },
-        {
-            "parameters": {
-                "rules": {
-                    "values": [
-                        {
-                            "conditions": {
-                                "options": {
-                                    "caseSensitive": true,
-                                    "leftValue": "",
-                                    "typeValidation": "strict",
-                                    "version": 1
-                                },
-                                "conditions": [
-                                    {
-                                        "leftValue": "={{ $json.audio }}",
-                                        "rightValue": "",
-                                        "operator": {
-                                            "type": "string",
-                                            "operation": "isNotEmpty"
-                                        }
-                                    }
-                                ],
-                                "combinator": "and"
-                            },
-                            "renameOutput": true,
-                            "outputKey": "audio"
-                        },
-                        {
-                            "conditions": {
-                                "options": {
-                                    "caseSensitive": true,
-                                    "leftValue": "",
-                                    "typeValidation": "strict",
-                                    "version": 1
-                                },
-                                "conditions": [
-                                    {
-                                        "leftValue": "={{ $json.media }}",
-                                        "rightValue": "",
-                                        "operator": {
-                                            "type": "string",
-                                            "operation": "isNotEmpty"
-                                        }
-                                    }
-                                ],
-                                "combinator": "and"
-                            },
-                            "renameOutput": true,
-                            "outputKey": "media"
-                        },
-                        {
-                            "conditions": {
-                                "options": {
-                                    "caseSensitive": true,
-                                    "leftValue": "",
-                                    "typeValidation": "strict",
-                                    "version": 1
-                                },
-                                "conditions": [
-                                    {
-                                        "leftValue": "={{ true }}",
-                                        "rightValue": "={{ true }}",
-                                        "operator": {
-                                            "type": "boolean",
-                                            "operation": "true"
-                                        }
-                                    }
-                                ],
-                                "combinator": "and"
-                            },
-                            "renameOutput": true,
-                            "outputKey": "texto"
-                        }
-                    ]
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
                 },
-                "options": {}
-            },
-            "id": "c8eb8c51-61b9-4735-ac94-80b5a3f8f577",
-            "name": "Qual Tipo de Envio?",
-            "type": "n8n-nodes-base.switch",
-            "typeVersion": 3,
-            "position": [
-                -304,
-                208
-            ]
-        },
-        {
-            "parameters": {
-                "method": "POST",
-                "url": "=https://evolution.naturaisterravida.com.br/message/sendWhatsAppAudio/{{ $json.instance }}",
-                "sendHeaders": true,
-                "headerParameters": {
-                    "parameters": [
-                        {
-                            "name": "apikey",
-                            "value": "={{ $json.apiKey }}"
-                        },
-                        {
-                            "name": "Content-Type",
-                            "value": "application/json"
-                        }
-                    ]
-                },
-                "sendBody": true,
-                "contentType": "raw",
-                "rawContentType": "application/json",
-                "body": "={{ JSON.stringify({\n  number: $json.number,\n  audio: ($json.audio.data || $json.audio),\n  options: { delay: 1200 }\n}) }}",
-                "options": {
-                    "batching": {
-                        "batch": {
-                            "batchSize": 1,
-                            "batchInterval": 3000
-                        }
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.audio ? 'sim' : 'nao' }}",
+                    "rightValue": "sim",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
                     }
-                }
-            },
-            "id": "5f8a5405-a2fd-4f50-959d-3e89fbb536b9",
-            "name": "Enviar WhatsApp Audio",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.1,
-            "position": [
-                0,
-                0
-            ],
-            "onError": "continueRegularOutput"
-        },
-        {
-            "parameters": {
-                "method": "POST",
-                "url": "=https://evolution.naturaisterravida.com.br/message/sendMedia/{{ $json.instance }}",
-                "sendHeaders": true,
-                "headerParameters": {
-                    "parameters": [
-                        {
-                            "name": "apikey",
-                            "value": "={{ $json.apiKey }}"
-                        },
-                        {
-                            "name": "Content-Type",
-                            "value": "application/json"
-                        }
-                    ]
-                },
-                "sendBody": true,
-                "contentType": "raw",
-                "rawContentType": "application/json",
-                "body": "={{ JSON.stringify({\n  number: $json.number,\n  media: ($json.media.data || $json.media),\n  mediatype: (($json.media.mimetype || '').split('/')[0] || 'image'),\n  mimetype: $json.media.mimetype,\n  caption: $json.text,\n  fileName: $json.media.filename,\n  options: { delay: 1200 }\n}) }}",
-                "options": {
-                    "batching": {
-                        "batch": {
-                            "batchSize": 1,
-                            "batchInterval": 5000
-                        }
-                    }
-                }
-            },
-            "id": "86b52786-5e93-4bd1-ae11-68b11d764a8b",
-            "name": "Enviar Arquivo/Foto",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.1,
-            "position": [
-                0,
-                200
-            ],
-            "onError": "continueRegularOutput"
-        },
-        {
-            "parameters": {
-                "method": "POST",
-                "url": "=https://evolution.naturaisterravida.com.br/message/sendText/{{ $json.instance }}",
-                "sendHeaders": true,
-                "headerParameters": {
-                    "parameters": [
-                        {
-                            "name": "apikey",
-                            "value": "={{ $json.apiKey }}"
-                        },
-                        {
-                            "name": "Content-Type",
-                            "value": "application/json"
-                        }
-                    ]
-                },
-                "sendBody": true,
-                "contentType": "raw",
-                "rawContentType": "application/json",
-                "body": "={{ JSON.stringify({\n  number: $json.number,\n  text: $json.text,\n  options: { delay: 1200, linkPreview: true }\n}) }}",
-                "options": {
-                    "batching": {
-                        "batch": {
-                            "batchSize": 1,
-                            "batchInterval": 3000
-                        }
-                    }
-                }
-            },
-            "id": "12fb7f22-c06d-4cf5-ae22-c446aa8da9a9",
-            "name": "Enviar Texto Puro",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.1,
-            "position": [
-                0,
-                400
-            ],
-            "onError": "continueRegularOutput"
-        }
-    ],
-    "pinData": {},
-    "connections": {
-        "Webhook": {
-            "main": [
-                [
-                    {
-                        "node": "Processar Dados",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Processar Dados": {
-            "main": [
-                [
-                    {
-                        "node": "Resposta Interface",
-                        "type": "main",
-                        "index": 0
-                    },
-                    {
-                        "node": "Qual Tipo de Envio?",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Qual Tipo de Envio?": {
-            "main": [
-                [
-                    {
-                        "node": "Enviar WhatsApp Audio",
-                        "type": "main",
-                        "index": 0
-                    }
+                  }
                 ],
-                [
-                    {
-                        "node": "Enviar Arquivo/Foto",
-                        "type": "main",
-                        "index": 0
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.media ? 'sim' : 'nao' }}",
+                    "rightValue": "sim",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
                     }
+                  }
                 ],
-                [
-                    {
-                        "node": "Enviar Texto Puro",
-                        "type": "main",
-                        "index": 0
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "media"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "1",
+                    "rightValue": "1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
                     }
-                ]
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "texto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0d03a224-6357-4d23-a445-d56cbabe9fe1",
+      "name": "Qual Tipo de Envio?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -8800,
+        5040
+      ],
+      "fallbackOutput": 2
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "disparo-whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f52c67ab-5403-4314-8d93-90dff695428f",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -10032,
+        5104
+      ],
+      "webhookId": "disparo-whatsapp"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.item.json;\nconst body = input.body || input;\nconst mensagemGlobal = (body.message || body.mensagem || '').trim();\n\n// Captura credenciais e limpa espaços invisíveis\nconst evUrl = (body.evolution_url || 'https://evolution.naturalisterravida.com.br').trim();\nconst instanceName = (body.instance || body.instanceName || '').trim();\nconst apiKey = (body.apiKey || body.apikey || '').trim();\n\n// AI Data\nconst useAI = body.useAI === true || body.useAI === 'true';\nconst aiPrompt = (body.aiPrompt || '').trim();\nconst aiKey = (body.aiKey || '').trim();\nconst aiModel = (body.aiModel || 'gemini-flash-latest').trim();\n\nlet lista = [];\nif (body.contatos && Array.isArray(body.contatos)) {\n    lista = body.contatos;\n} else if (Array.isArray(body)) {\n    lista = body;\n} else {\n    lista = [body];\n}\n\nreturn lista.map(c => {\n  let tel = String(c.number || c.telefone || c.numero || '').replace(/\\D/g, '');\n  if (tel.length >= 10 && !tel.startsWith('55') && !tel.startsWith('1')) tel = '55' + tel;\n  \n  return {\n    json: {\n      number: tel,\n      text: mensagemGlobal.replace(/{nome}/gi, c.nome || c._nome_exibicao || 'Cliente'),\n      media: body.media || null,\n      audio: body.audio || null,\n      mimetype: body.mimeType || body.mimetype || null,\n      filename: body.mediaName || body.filename || 'arquivo',\n      instance: instanceName,\n      apiKey: apiKey,\n      evolution_url: evUrl,\n      useAI: useAI,\n      aiPrompt: aiPrompt,\n      aiKey: aiKey,\n      aiModel: aiModel,\n      contactName: c.nome || c._nome_exibicao || 'Cliente'\n    }\n  };\n}).filter(item => item.json.number.length >= 10);"
+      },
+      "id": "3f7d7161-e830-4e10-abe8-e2659216d7bc",
+      "name": "Processar Dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9776,
+        5104
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Processado pelo N8N (AI Active)\",\n  \"enviados\": {{ $('Processar Dados').all().length }}\n}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, apikey"
+              }
             ]
+          }
         }
+      },
+      "id": "4f0e2c4b-e8be-4c2a-9936-9174d0f18f18",
+      "name": "Resposta Interface",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -7300,
+        5040
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ String($json.useAI) }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "sim"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b90e6847-1e6b-44aa-9a98-34aa96baa9e5",
+      "name": "Usar IA?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -9536,
+        5104
+      ],
+      "fallbackOutput": 1
+    },
+    {
+      "parameters": {
+        "amount": 7,
+        "unit": "seconds"
+      },
+      "id": "777a8987-a2f9-4b14-8d93-9174d0f18f18",
+      "name": "Wait 7s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -9400,
+        4960
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/' + ($json.aiModel || 'gemini-flash-latest').trim() + ':generateContent' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ ($json.aiKey || '').trim() }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({\n  \"contents\": [{\n    \"parts\":[{\n      \"text\": \"Instrução Principal: Re-escreva a mensagem abaixo tornando-a única e variada. Use o nome do cliente se fornecido.\\n\\nMensagem Base: \" + ($json.text || $json.texto) + \"\\nNome do Cliente: \" + ($json.contactName || 'Cliente') + \"\\nInstrução Extra: \" + ($json.aiPrompt || 'Seja profissional') + \"\\n\\nID de Variação (Não inclua no texto): \" + $now + \"\\n\\nResposta: Envie APENAS a mensagem reescrita final.\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"temperature\": 1.0,\n    \"topP\": 0.95,\n    \"topK\": 64\n  }\n}) }}",
+        "options": {
+          "includeInputInOutput": true,
+          "retryOnFail": true,
+          "maxRetries": 2,
+          "waitBetweenRetries": 5000
+        }
+      },
+      "id": "2d282701-4866-4836-93c8-44897019de4b",
+      "name": "Agente Gemini AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -9200,
+        4960
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const res = $input.item.json;\nconst original = $('Processar Dados').item.json;\n\n// 1. Tenta extrair a resposta da IA\nlet aiResponse = res.candidates?.[0]?.content?.parts?.[0]?.text || res.text;\n\n// 2. Limpa a resposta se ela existir\nconst cleanAI = aiResponse ? String(aiResponse).trim().replace(/^\"|\"$/g, '') : null;\n\n// 3. RESTAURA DADOS CRÍTICOS (Proteção contra erro 403/404)\nreturn {\n  json: {\n    ...original,\n    text: cleanAI || original.text,\n    texto: cleanAI || original.text,\n    ia_status: cleanAI ? 'Variada' : 'Original'\n  }\n};"
+      },
+      "id": "5c383545-54a2-4db8-ad59-b6e603f93a59",
+      "name": "Processar Resposta AI",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9072,
+        4960
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.evolution_url }}/message/sendWhatsAppAudio/{{ $json.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.apiKey }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({\n  number: $json.number,\n  audio: ($json.audio.data || $json.audio),\n  options: { delay: 1200 }\n}) }}",
+        "options": {}
+      },
+      "id": "a82d6421-b2f9-4ca6-b49b-4b14bfd6fad9",
+      "name": "Enviar WhatsApp Audio1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -8528,
+        4800
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.evolution_url }}/message/sendMedia/{{ $json.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.apiKey }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({\n  number: $json.number,\n  media: ($json.media.data || $json.media),\n  mediatype: (($json.mimetype || '').split('/')[0] || 'image'),\n  mimetype: $json.mimetype,\n  fileName: $json.filename,\n  options: { delay: 1200 }\n}) }}",
+        "options": {}
+      },
+      "id": "0a2ba82c-6333-45e5-8fc4-adf732f3e696",
+      "name": "Enviar Arquivo/Foto1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -8512,
+        5024
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.evolution_url }}/message/sendText/{{ $json.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.apiKey }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({\n  number: $json.number,\n  text: $json.text || $json.texto,\n  options: { delay: 1200, linkPreview: true }\n}) }}",
+        "options": {}
+      },
+      "id": "1bfbab8c-21b6-4dfb-8a25-753806909191",
+      "name": "Enviar Texto Puro1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -8528,
+        5248
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "seconds"
+      },
+      "id": "675a8987-a2f9-4b14-8d93-9174d0f18f18",
+      "name": "Wait 3s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -8300,
+        5024
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.evolution_url }}/message/sendText/{{ $json.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.apiKey }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({\n  number: $json.number,\n  text: $json.text || $json.texto,\n  options: { delay: 1200, linkPreview: true }\n}) }}",
+        "options": {}
+      },
+      "id": "999a8987-bc1a-4f14-8d93-9174d0f18f18",
+      "name": "Enviar Texto Sequencial",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -8100,
+        5024
+      ],
+      "onError": "continueRegularOutput"
     }
+  ],
+  "pinData": {},
+  "connections": {
+    "Qual Tipo de Envio?": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Audio1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Arquivo/Foto1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Texto Puro1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Processar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Dados": {
+      "main": [
+        [
+          {
+            "node": "Usar IA?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usar IA?": {
+      "main": [
+        [
+          {
+            "node": "Wait 7s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Qual Tipo de Envio?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Gemini 2s": {
+      "main": [
+        [
+          {
+            "node": "Agente Gemini AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1s": {
+      "main": [
+        [
+          {
+            "node": "Agente Gemini AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s": {
+      "main": [
+        [
+          {
+            "node": "Agente Gemini AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 7s": {
+      "main": [
+        [
+          {
+            "node": "Agente Gemini AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Gemini AI": {
+      "main": [
+        [
+          {
+            "node": "Processar Resposta AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Resposta AI": {
+      "main": [
+        [
+          {
+            "node": "Qual Tipo de Envio?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp Audio1": {
+      "main": [
+        [
+          {
+            "node": "Resposta Interface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Texto Puro1": {
+      "main": [
+        [
+          {
+            "node": "Resposta Interface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Texto Sequencial": {
+      "main": [
+        [
+          {
+            "node": "Resposta Interface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Arquivo/Foto1": {
+      "main": [
+        [
+          {
+            "node": "Wait 3s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3s": {
+      "main": [
+        [
+          {
+            "node": "Enviar Texto Sequencial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
 }
